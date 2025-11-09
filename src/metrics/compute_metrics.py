@@ -88,7 +88,9 @@ class MetricsCalculator:
         self.mean_iou.update(pred_labels, true_labels)
         return
 
-    def compute_metrics(self) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
+    def compute_metrics(
+        self,
+    ) -> Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]:
         """
         compute the metrics
 
