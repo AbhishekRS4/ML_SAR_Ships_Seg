@@ -1,5 +1,7 @@
 numpy==2.2.6
 pillow==11.1.0
 pycocotools==2.0.10
+scikit-image==0.25.2
 torch==2.6.0
 torchvision==0.21.0
+torchmetrics==1.8.2
