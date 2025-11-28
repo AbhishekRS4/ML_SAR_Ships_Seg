@@ -2,7 +2,7 @@ import logging
 import argparse
 
 
-from utils.label_processing import hrsid_json_to_lbl_image
+from utils.hrsid_label_processing import hrsid_json_to_lbl_image
 
 
 def parse_args() -> argparse.Namespace:
