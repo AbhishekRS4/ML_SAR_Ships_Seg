@@ -130,6 +130,7 @@ def get_confusion_matrix_figure(
     list_label_names: Union[List[str], np.ndarray],
     scale_to_percent: bool = True,
     cmap: str = "Blues",
+    font_size: int = 16,
 ) -> ConfusionMatrixDisplay:
     """
     get confusion matrix figure
@@ -159,5 +160,6 @@ def get_confusion_matrix_figure(
         confusion_matrix=conf_matrix, display_labels=list_label_names
     )
     fig, ax = plt.subplots(figsize=(12, 12))
+    plt.rcParams.update({"font.size": font_size})
     conf_matrix_fig.plot(cmap=cmap, xticks_rotation="vertical", ax=ax)
     return conf_matrix_fig
