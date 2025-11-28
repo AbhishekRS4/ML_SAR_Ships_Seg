@@ -9,7 +9,7 @@ from torchmetrics.segmentation import DiceScore, MeanIoU
 from torchmetrics import Accuracy, F1Score, Precision, Recall, ConfusionMatrix
 
 
-class MetricsCalculator:
+class SemSegMetricsCalculator:
     def __init__(
         self,
         device: torch.device,
