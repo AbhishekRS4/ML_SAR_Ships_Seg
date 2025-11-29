@@ -3,6 +3,9 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 
+from typing import List
+
+
 class DeepLabV3Plus(nn.Module):
     """
     DeepLabV3Plus class to build the DeepLabV3+ decoder model
@@ -28,13 +31,13 @@ class DeepLabV3Plus(nn.Module):
 
     def __init__(
         self,
-        in_channels,
-        encoder_projection_in_channels,
-        num_classes,
-        encoder_projection_out_channels=48,
-        aspp_out_channels=256,
-        final_out_channels=256,
-        aspp_dilate=[12, 24, 36],
+        in_channels: int,
+        encoder_projection_in_channels: int,
+        num_classes: int,
+        encoder_projection_out_channels: int = 48,
+        aspp_out_channels: int = 256,
+        final_out_channels: int = 256,
+        aspp_dilate: List[int] = [12, 24, 36],
     ):
         super().__init__()
         self.projection_conv = nn.Sequential(
@@ -121,7 +124,7 @@ class ASPPConvLayer(nn.Sequential):
         dilation rate
     """
 
-    def __init__(self, in_channels, out_channels, dilation):
+    def __init__(self, in_channels: int, out_channels: int, dilation: int):
         super().__init__()
         self.conv_block = nn.Sequential(
             nn.Conv2d(
@@ -146,7 +149,7 @@ class ASPPConvLayer(nn.Sequential):
                 nn.init.constant_(m.bias, 0)
         return
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         ---------
         Arguments
@@ -165,7 +168,7 @@ class ASPPConvLayer(nn.Sequential):
 
 
 class ASPPPoolingLayer(nn.Sequential):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels: int, out_channels: int):
         """
         ASPPPoolingLayer class to build the ASPPPoolingLayer used in ASPPBlock
 
@@ -197,7 +200,7 @@ class ASPPPoolingLayer(nn.Sequential):
                 nn.init.constant_(m.bias, 0)
         return
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         ---------
         Arguments
@@ -218,7 +221,9 @@ class ASPPPoolingLayer(nn.Sequential):
 
 
 class ASPPBlock(nn.Module):
-    def __init__(self, in_channels, atrous_rates, aspp_out_channels=256):
+    def __init__(
+        self, in_channels: int, atrous_rates: List[int], aspp_out_channels: int = 256
+    ):
         """
         ASPPBlock class to build the ASPPBlock
 
@@ -276,7 +281,7 @@ class ASPPBlock(nn.Module):
                 nn.init.constant_(m.bias, 0)
         return
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         ---------
         Arguments
