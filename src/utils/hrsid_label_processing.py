@@ -59,8 +59,11 @@ def save_label_per_image(
                 instance_seg_lbl[sem_seg_lbl_this_instance > 0] = ann_index
             else:
                 logging.info("Unknown instance for the annotation")
+
     # Save the generated label
     if label_type == "semantic_seg":
+        sem_seg_lbl = sem_seg_lbl > 0
+        sem_seg_lbl = sem_seg_lbl.astype(np.uint8)
         lbl_image = Image.fromarray(sem_seg_lbl, mode="L")
     else:
         lbl_image = Image.fromarray(instance_seg_lbl, mode="L")
