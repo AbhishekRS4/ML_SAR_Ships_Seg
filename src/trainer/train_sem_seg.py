@@ -179,7 +179,7 @@ def train_sem_seg_pipeline(
     filters: List[int] = [64, 128, 256, 512],
     model_compile_mode: str = "normal",
     file_model_ckpt: Union[str, None] = None,
-    model_task: str="semantic_segmentation",
+    model_task: str = "semantic_segmentation",
 ) -> None:
     """
     main model train pipeline for vanilla style training for any type of NN
