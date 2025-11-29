@@ -4,6 +4,9 @@ import torch.nn.functional as F
 from timm.models.layers import trunc_normal_, DropPath
 
 
+from typing import List
+
+
 class LayerNorm(nn.Module):
     """LayerNorm that supports two data formats: channels_last (default) or channels_first.
     The ordering of the dimensions in the inputs. channels_last corresponds to inputs with
@@ -11,7 +14,12 @@ class LayerNorm(nn.Module):
     with shape (batch_size, channels, height, width).
     """
 
-    def __init__(self, normalized_shape, eps=1e-6, data_format="channels_last"):
+    def __init__(
+        self,
+        normalized_shape: int,
+        eps: float = 1e-6,
+        data_format: str = "channels_last",
+    ):
         super().__init__()
         self.weight = nn.Parameter(torch.ones(normalized_shape))
         self.bias = nn.Parameter(torch.zeros(normalized_shape))
@@ -21,7 +29,7 @@ class LayerNorm(nn.Module):
             raise NotImplementedError
         self.normalized_shape = (normalized_shape,)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         if self.data_format == "channels_last":
             return F.layer_norm(
                 x, self.normalized_shape, self.weight, self.bias, self.eps
@@ -37,12 +45,12 @@ class LayerNorm(nn.Module):
 class GRN(nn.Module):
     """GRN (Global Response Normalization) layer"""
 
-    def __init__(self, dim):
+    def __init__(self, dim: int):
         super().__init__()
         self.gamma = nn.Parameter(torch.zeros(1, 1, 1, dim))
         self.beta = nn.Parameter(torch.zeros(1, 1, 1, dim))
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         Gx = torch.norm(x, p=2, dim=(1, 2), keepdim=True)
         Nx = Gx / (Gx.mean(dim=-1, keepdim=True) + 1e-6)
         return self.gamma * (x * Nx) + self.beta + x
@@ -56,7 +64,7 @@ class Block(nn.Module):
         drop_path (float): Stochastic depth rate. Default: 0.0
     """
 
-    def __init__(self, dim, drop_path=0.0):
+    def __init__(self, dim: int, drop_path: float = 0.0):
         super().__init__()
         self.dwconv = nn.Conv2d(
             dim, dim, kernel_size=7, padding=3, groups=dim
@@ -70,7 +78,7 @@ class Block(nn.Module):
         self.pwconv2 = nn.Linear(4 * dim, dim)
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         input = x
         x = self.dwconv(x)
         x = x.permute(0, 2, 3, 1)  # (N, C, H, W) -> (N, H, W, C)
@@ -99,11 +107,11 @@ class ConvNeXtV2(nn.Module):
 
     def __init__(
         self,
-        in_chans=1,
-        depths=[3, 3, 9, 3],
-        dims=[96, 192, 384, 768],
-        drop_path_rate=0.0,
-        head_init_scale=1.0,
+        in_chans: int = 1,
+        depths: List[int] = [3, 3, 9, 3],
+        dims: List[int] = [96, 192, 384, 768],
+        drop_path_rate: float = 0.0,
+        head_init_scale: float = 1.0,
     ):
         super().__init__()
         self.dict_encoder_features = {}
@@ -146,22 +154,22 @@ class ConvNeXtV2(nn.Module):
             trunc_normal_(m.weight, std=0.02)
             nn.init.constant_(m.bias, 0)
 
-    def forward_features(self, x):
+    def forward_features(self, x: torch.Tensor) -> torch.Tensor:
         for i in range(4):
             x = self.downsample_layers[i](x)
             x = self.stages[i](x)
         return self.norm(x)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.forward_features(x)
         return x
 
 
-def convnextv2_tiny(**kwargs):
+def convnext_v2_tiny(**kwargs):
     model = ConvNeXtV2(depths=[3, 3, 9, 3], dims=[96, 192, 384, 768], **kwargs)
     return model
 
 
-def convnextv2_base(**kwargs):
+def convnext_v2_base(**kwargs):
     model = ConvNeXtV2(depths=[3, 3, 27, 3], dims=[128, 256, 512, 1024], **kwargs)
     return model
