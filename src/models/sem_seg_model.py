@@ -3,13 +3,14 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 
-from models.deep_lab_v3_plus import DeepLabV3Plus
-from models.conv_next_v2 import convnextv2_tiny, convnextv2_base
+from models.deeplab_v3_plus import DeepLabV3Plus
+from models.convnext_v2 import convnext_v2_tiny, convnext_v2_base
 
 
 class ConvNextV2TinyDeepLabV3Plus(nn.Module):
     def __init__(
         self,
+        num_in_channels: int,
         num_classes: int,
         encoder_out_channels: int = 768,
         encoder_projection_in_channels: int = 96,
@@ -23,14 +24,14 @@ class ConvNextV2TinyDeepLabV3Plus(nn.Module):
         """
         super().__init__()
 
-        self.encoder = convnextv2_tiny()
+        self.encoder = convnext_v2_tiny(num_in_channels=num_in_channels)
         self.decoder_segmenter = DeepLabV3Plus(
             encoder_out_channels,
             encoder_projection_in_channels,
             num_classes,
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         input_shape = x.shape[2:]
 
         x = self.encoder.downsample_layers[0](x)
@@ -52,7 +53,8 @@ class ConvNextV2TinyDeepLabV3Plus(nn.Module):
 class ConvNextV2BaseDeepLabV3Plus(nn.Module):
     def __init__(
         self,
-        num_classes,
+        num_in_channels: int,
+        num_classes: int,
         encoder_out_channels: int = 1024,
         encoder_projection_in_channels: int = 128,
     ):
@@ -65,14 +67,14 @@ class ConvNextV2BaseDeepLabV3Plus(nn.Module):
         """
         super().__init__()
 
-        self.encoder = convnextv2_base()
+        self.encoder = convnext_v2_base(num_in_channels=num_in_channels)
         self.decoder_segmenter = DeepLabV3Plus(
             encoder_out_channels,
             encoder_projection_in_channels,
             num_classes,
         )
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         input_shape = x.shape[2:]
 
         x = self.encoder.downsample_layers[0](x)
