@@ -5,3 +5,4 @@ scikit-image==0.25.2
 torch==2.6.0
 torchvision==0.21.0
 torchmetrics==1.8.2
+timm==1.0.22
