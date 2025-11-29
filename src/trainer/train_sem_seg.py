@@ -228,8 +228,11 @@ def train_sem_seg_pipeline(
         device_str = "cpu"
 
     device = torch.device(device_str)
-    if model_compile_mode != "normal":
-        model = torch.compile(model, mode=model_compile_mode)
+    if model_compile_mode != "uncompiled":
+        if model_compile_mode != "normal":
+            model = torch.compile(model, mode=model_compile_mode)
+        else:
+            model = torch.compile(model)
 
     if file_model_ckpt is not None:
         logging.info(
