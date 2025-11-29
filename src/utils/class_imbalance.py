@@ -33,8 +33,8 @@ def compute_class_weights(
 
     dict_labels_sum = dict(sorted(dict_labels_sum.items()))
 
-    unique_classes = dict_labels_sum.keys()
-    count_classes = dict_labels_sum.values()
+    unique_classes = list(dict_labels_sum.keys())
+    count_classes = list(dict_labels_sum.values())
 
     unique_classes = np.array(unique_classes)
     count_classes = np.array(count_classes)
