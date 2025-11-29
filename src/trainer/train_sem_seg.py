@@ -18,9 +18,12 @@ from torch.optim.lr_scheduler import PolynomialLR
 from sklearn.metrics import ConfusionMatrixDisplay
 
 
-from models.sem_seg import DeepLabV3Plus
 from loss_func.focal_loss import FocalLoss
 from data_handler.data_loader import get_dataloaders_for_training
+from models.sem_seg_model import (
+    ConvNextV2TinyDeepLabV3Plus,
+    ConvNextV2BaseDeepLabV3Plus,
+)
 from metrics.compute_metrics import (
     SemSegMetricsCalculator,
     get_confusion_matrix_plot,
@@ -28,7 +31,7 @@ from metrics.compute_metrics import (
 
 
 def train_nn(
-    model: DeepLabV3Plus,
+    model: Union[ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus],
     device: torch.device,
     train_loader: DataLoader,
     criterion: CrossEntropyLoss,
@@ -96,7 +99,7 @@ def train_nn(
 
 
 def test_nn(
-    model: DeepLabV3Plus,
+    model: Union[ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus],
     device: torch.device,
     test_loader: DataLoader,
     criterion: CrossEntropyLoss,
@@ -173,10 +176,7 @@ def train_sem_seg_pipeline(
     checkpoint_skip: int = 20,
     which_gpu: str = "0",
     num_workers: int = 8,
-    num_input_feats: int = 1,
-    activation: str = "gelu",
-    dropout_rate: float = 0.2,
-    filters: List[int] = [64, 128, 256, 512],
+    num_in_channels: int = 1,
     model_compile_mode: str = "normal",
     file_model_ckpt: Union[str, None] = None,
     model_task: str = "semantic_segmentation",
@@ -213,13 +213,18 @@ def train_sem_seg_pipeline(
     )
 
     # build the model based on the selected option
-    model = DeepLabV3Plus(
-        num_input_feats=num_input_feats,
-        num_classes=num_classes,
-        activation=activation,
-        dropout_rate=dropout_rate,
-        filters=filters,
-    )
+    if model_name == "convnext_v2_tiny_deeplab_v3+":
+        model = ConvNextV2TinyDeepLabV3Plus(
+            num_in_channels,
+            num_classes,
+        )
+    elif model_name == "convnext_v2_base_deeplab_v3+":
+        model = ConvNextV2BaseDeepLabV3Plus(
+            num_in_channels,
+            num_classes,
+        )
+    else:
+        logging.error(f"unidentified option for model_name={model_name}")
 
     # automatically choose the device
     if torch.cuda.is_available():
@@ -300,7 +305,7 @@ def train_sem_seg_pipeline(
         mlflow.log_param("optimization.loss_fn", loss_fn)
         mlflow.log_param("optimization.class_weights", class_weights)
 
-        mlflow.log_param("dataset.num_input_feats", num_input_feats)
+        mlflow.log_param("dataset.num_in_channels", num_in_channels)
         mlflow.log_param("dataset.num_classes", num_classes)
         mlflow.log_param("dataset.dir_train_images", dir_train_images)
         mlflow.log_param("dataset.dir_train_labels", dir_train_labels)
@@ -314,9 +319,6 @@ def train_sem_seg_pipeline(
         mlflow.log_text("\n".join(list_test_images), "dataset_list_test_images.txt")
 
         mlflow.log_param("model.task", model_task)
-        mlflow.log_param("model.activation", activation)
-        mlflow.log_param("model.dropout_rate", dropout_rate)
-        mlflow.log_param("model.filters", filters)
         mlflow.log_param("model.model_compile_mode", model_compile_mode)
 
         for epoch in range(1, num_epochs + 1):
@@ -396,11 +398,8 @@ def train_sem_seg_pipeline(
                         "model_state_dict": model.state_dict(),
                         "model_class": model.__class__.__name__,
                         "model_config": {
-                            "num_input_feats": num_input_feats,
+                            "num_in_channels": num_in_channels,
                             "num_classes": num_classes,
-                            "activation": activation,
-                            "dropout_rate": dropout_rate,
-                            "filters": filters,
                         },
                     },
                     model_file_name,
