@@ -111,6 +111,7 @@ class HRSIDSemSegDataset(Dataset):
         else:
             input_image_tensor = image_tensor
             input_label_tensor = label_tensor
+        input_label_tensor = torch.squeeze(input_label_tensor)
         return input_image_tensor, input_label_tensor
 
 
