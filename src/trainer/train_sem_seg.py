@@ -26,7 +26,7 @@ from models.sem_seg_model import (
 )
 from metrics.compute_metrics import (
     SemSegMetricsCalculator,
-    get_confusion_matrix_plot,
+    get_confusion_matrix_figure,
 )
 
 
@@ -375,11 +375,11 @@ def train_sem_seg_pipeline(
 
             # keep track of the best model and its metrics
             if (epoch > checkpoint_skip) and (epoch % checkpoint_freq == 0):
-                train_conf_matrix_fig = get_confusion_matrix_plot(
+                train_conf_matrix_fig = get_confusion_matrix_figure(
                     train_conf_mat,
                     labels_display_logs,
                 )
-                test_conf_matrix_fig = get_confusion_matrix_plot(
+                test_conf_matrix_fig = get_confusion_matrix_figure(
                     test_conf_mat,
                     labels_display_logs,
                 )
