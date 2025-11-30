@@ -146,7 +146,9 @@ class ConvNeXtV2(nn.Module):
             self.stages.append(stage)
             cur += depths[i]
 
-        self.norm = nn.LayerNorm(dims[-1], eps=1e-6)  # final norm layer
+        self.norm = LayerNorm(
+            dims[-1], eps=1e-6, data_format="channels_first"
+        )  # final norm layer
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
