@@ -54,10 +54,15 @@ class SemSegMetricsCalculator:
             num_classes=self.num_classes,
             normalize="true",
         ).to(self.device)
-        self.mean_iou = MeanIoU(num_classes=num_classes).to(self.device)
+        self.mean_iou = MeanIoU(
+            num_classes=num_classes,
+            input_format="index",
+        ).to(self.device)
         self.dice_score = DiceScore(
             num_classes=num_classes,
             average=average,
+            input_format="index",
+            aggregation_level="global",
         ).to(self.device)
 
     def update_metrics(
@@ -76,6 +81,9 @@ class SemSegMetricsCalculator:
         pred_labels: Tensor
             a torch tensor of predicted labels
         """
+        self.dice_score.update(pred_labels, true_labels)
+        self.mean_iou.update(pred_labels, true_labels)
+
         true_labels = true_labels.view(-1)
         pred_labels = pred_labels.view(-1)
 
@@ -84,8 +92,6 @@ class SemSegMetricsCalculator:
         self.precision_score.update(pred_labels, true_labels)
         self.recall_score.update(pred_labels, true_labels)
         self.conf_matrix.update(pred_labels, true_labels)
-        self.dice_score.update(pred_labels, true_labels)
-        self.mean_iou.update(pred_labels, true_labels)
         return
 
     def compute_metrics(
