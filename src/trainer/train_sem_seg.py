@@ -191,8 +191,12 @@ def train_sem_seg_pipeline(
     path_dir_train_images = Path(dir_train_images)
     path_dir_test_images = Path(dir_test_images)
 
-    list_train_images = [f.name for f in path_dir_train_images.glob("*png") if f.is_file()]
-    list_test_images = [f.name for f in path_dir_test_images.glob("*png") if f.is_file()]
+    list_train_images = [
+        f.name for f in path_dir_train_images.glob("*png") if f.is_file()
+    ]
+    list_test_images = [
+        f.name for f in path_dir_test_images.glob("*png") if f.is_file()
+    ]
 
     logging.info(f"num train images: {len(list_train_images)}")
     logging.info(f"num test images: {len(list_test_images)}")
@@ -343,7 +347,6 @@ def train_sem_seg_pipeline(
                 optimizer,
                 amp_scaler,
                 metrics_calculator,
-                num_classes,
             )
             (
                 test_loss,
@@ -360,7 +363,6 @@ def train_sem_seg_pipeline(
                 test_loader,
                 criterion,
                 metrics_calculator,
-                num_classes,
             )
             time_end_epoch = time.time()
 
