@@ -128,11 +128,9 @@ def get_dataloaders_for_training(
     """
     path_dir_train_images = Path(dir_train_images)
     path_dir_train_labels = Path(dir_train_labels)
-    logging.info(f"num train images: {len(path_dir_train_images.glob('*png'))}")
 
     path_dir_test_images = Path(dir_test_images)
     path_dir_test_labels = Path(dir_test_labels)
-    logging.info(f"num test images: {len(path_dir_test_images.glob('*png'))}")
 
     train_set = HRSIDSemSegDataset(
         path_dir_train_images,

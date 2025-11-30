@@ -194,6 +194,9 @@ def train_sem_seg_pipeline(
     list_train_images = [f for f in path_dir_train_images.glob("*png") if f.is_file()]
     list_test_images = [f for f in path_dir_test_images.glob("*png") if f.is_file()]
 
+    logging.info(f"num train images: {len(list_train_images)}")
+    logging.info(f"num test images: {len(list_test_images)}")
+
     labels_display_logs = np.array(labels_display_logs)
     logging.info(f"label names for display in experiment logs: {labels_display_logs}")
 
