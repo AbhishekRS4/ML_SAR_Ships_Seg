@@ -22,7 +22,7 @@ def parse_arguments() -> argparse.Namespace:
         help="full path to the directory with the train set labels",
     )
     parser.add_argument(
-        "--dir-train-images",
+        "--dir-test-images",
         default="/home/abhishek/datasets/HRSID/test_images",
         type=str,
         help="full path to the directory with the test set images",
