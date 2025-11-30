@@ -113,7 +113,7 @@ def test_nn(
     num_test_batches = len(test_loader)
 
     running_test_loss = torch.zeros(1).to(device)
-    metrics_calculator.reset_confusion_matrix()
+    metrics_calculator.reset_metrics()
 
     with torch.no_grad():
         for msi_bands, label in test_loader:
