@@ -89,6 +89,12 @@ def move_ship_images(
     path_dir_test_images = Path(dir_test_images)
     path_dir_test_labels = Path(dir_test_labels)
 
+    if not path_dir_train_images.is_dir():
+        path_dir_train_images.mkdir()
+
+    if not path_dir_test_images.is_dir():
+        path_dir_test_images.mkdir()
+
     list_train_labels = [
         f.name for f in path_dir_train_labels.glob("*png") if f.is_file()
     ]
