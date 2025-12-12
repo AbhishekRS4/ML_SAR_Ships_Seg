@@ -11,25 +11,25 @@ def parse_arguments() -> argparse.Namespace:
 
     parser.add_argument(
         "--dir-train-images",
-        default="/home/abhishek/datasets/HRSID/train_images",
+        default="HRSID/train_images",
         type=str,
         help="full path to the directory with the train set images",
     )
     parser.add_argument(
         "--dir-train-labels",
-        default="/home/abhishek/datasets/HRSID/train_labels",
+        default="HRSID/train_labels",
         type=str,
         help="full path to the directory with the train set labels",
     )
     parser.add_argument(
         "--dir-test-images",
-        default="/home/abhishek/datasets/HRSID/test_images",
+        default="HRSID/test_images",
         type=str,
         help="full path to the directory with the test set images",
     )
     parser.add_argument(
         "--dir-test-labels",
-        default="/home/abhishek/datasets/HRSID/test_labels",
+        default="HRSID/test_labels",
         type=str,
         help="full path to the directory with the test set labels",
     )
