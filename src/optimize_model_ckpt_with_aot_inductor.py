@@ -15,6 +15,13 @@ def parse_arguments() -> argparse.Namespace:
         help="full path to the checkpoint file to load for finetuning the model",
     )
     parser.add_argument(
+        "--model-name",
+        default="convnext_v2_tiny_deeplab_v3+",
+        choices=["convnext_v2_tiny_deeplab_v3+", "convnext_v2_base_deeplab_v3+"],
+        type=str,
+        help="the model that needs to be trained",
+    )
+    parser.add_argument(
         "--image-height",
         default=800,
         type=int,
@@ -56,6 +63,7 @@ def main() -> None:
 
     optimize_model_with_aot_inductor(
         ARGS.file_model_ckpt,
+        ARGS.model_name,
         ARGS.image_height,
         ARGS.image_width,
         which_gpu=ARGS.which_gpu,
