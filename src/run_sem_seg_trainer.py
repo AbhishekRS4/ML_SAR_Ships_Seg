@@ -156,7 +156,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model-compile-mode",
-        default="uncompiled",
+        default="reduce-overhead",
         type=str,
         choices=["normal", "reduce-overhead", "max-autotune", "uncompiled"],
         help="indicates the model compile option to use to reduce overhead during training",
