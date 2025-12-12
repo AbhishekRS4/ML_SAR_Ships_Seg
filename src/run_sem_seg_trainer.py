@@ -120,19 +120,19 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--num-epochs",
-        default=120,
+        default=60,
         type=int,
         help="number of epochs for which the model needs to be trained",
     )
     parser.add_argument(
         "--checkpoint-freq",
-        default=5,
+        default=2,
         type=int,
         help="checkpoint epoch frequency for which the model needs to be logged",
     )
     parser.add_argument(
         "--checkpoint-skip",
-        default=20,
+        default=10,
         type=int,
         help="checkpoint epoch skip is the first few epochs for which the model need not be logged",
     )
