@@ -16,6 +16,7 @@ def optimize_model_with_aot_inductor(
     image_height: int,
     image_width: int,
     which_gpu: str = "0",
+    model_compile_mode: str = "reduce-overhead",
 ) -> None:
     """
     function for optimizing the model with AOT inductor for inference and saving the model file
@@ -35,6 +36,11 @@ def optimize_model_with_aot_inductor(
     else:
         logging.error(f"unknown option for (model_name={model_name})")
 
+    if model_compile_mode != "uncompiled":
+        if model_compile_mode != "normal":
+            model = torch.compile(model, mode=model_compile_mode)
+        else:
+            model = torch.compile(model)
     model.load_state_dict(model_state_dict)
     model.eval()
 
