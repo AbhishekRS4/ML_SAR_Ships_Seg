@@ -34,6 +34,13 @@ def parse_arguments() -> argparse.Namespace:
         help="image width for AOT inductor sample input",
     )
     parser.add_argument(
+        "--model-compile-mode",
+        default="reduce-overhead",
+        type=str,
+        choices=["normal", "reduce-overhead", "max-autotune", "uncompiled"],
+        help="indicates the model compile option to use to reduce overhead during training",
+    )
+    parser.add_argument(
         "--which-gpu",
         default="0",
         type=str,
@@ -66,6 +73,7 @@ def main() -> None:
         ARGS.model_name,
         ARGS.image_height,
         ARGS.image_width,
+        model_compile_mode=ARGS.model_compile_mode,
         which_gpu=ARGS.which_gpu,
     )
     return
