@@ -4,10 +4,18 @@ import torch
 import logging
 
 from pathlib import Path
+from models.sem_seg_model import (
+    ConvNextV2TinyDeepLabV3Plus,
+    ConvNextV2BaseDeepLabV3Plus,
+)
 
 
 def optimize_model_with_aot_inductor(
-    file_model_ckpt: str, image_height: int, image_width: int, which_gpu: str = "0"
+    file_model_ckpt: str,
+    model_name: str,
+    image_height: int,
+    image_width: int,
+    which_gpu: str = "0",
 ) -> None:
     """
     function for optimizing the model with AOT inductor for inference and saving the model file
@@ -17,6 +25,18 @@ def optimize_model_with_aot_inductor(
         logging.error(f"file not found: {path_file_model_ckpt}")
 
     logging.info(f"loading model ckpt file from: {path_file_model_ckpt}")
+    model_checkpoint = torch.load(path_file_model_ckpt)
+    model_state_dict = model_checkpoint["model_state_dict"]
+
+    if model_name == "convnext_v2_tiny_deeplab_v3+":
+        model = ConvNextV2TinyDeepLabV3Plus(**model_checkpoint["model_config"])
+    elif model_name == "convnext_v2_base_deeplab_v3+":
+        model = ConvNextV2BaseDeepLabV3Plus(**model_checkpoint["model_config"])
+    else:
+        logging.error(f"unknown option for (model_name={model_name})")
+
+    model.load_state_dict(model_state_dict)
+    model.eval()
 
     path_file_aot_inductor_model = (
         path_file_model_ckpt.parent
