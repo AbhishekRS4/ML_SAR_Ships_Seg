@@ -71,10 +71,10 @@ def optimize_model_with_aot_inductor(
 
         _ = torch._inductor.aoti_compile_and_package(
             exported_program,
-            package_path=path_file_aot_inductor_model,
+            package_path=str(path_file_aot_inductor_model),
             inductor_configs=inductor_configs,
         )
-        # do not use pathlib PosixPaths, the AOT inductor optimized model saving will fail
+        # do not use pathlib PosixPaths, the AOT inductor optimized model saving will fail as it expects a string buffer or None
         # also, the file extension needs to be .pt2
     logging.info(
         f"optimized model with AOT Inductor is saved to: {path_file_aot_inductor_model}"
