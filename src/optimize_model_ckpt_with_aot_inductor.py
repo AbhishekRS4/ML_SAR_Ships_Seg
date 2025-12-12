@@ -34,7 +34,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--out-log-file",
-        default="hrsid_sem_seg_trainer.log",
+        default="optimize_model_with_aot_inductor.log",
         type=str,
         help="the log file where all the logs are recorded",
     )
