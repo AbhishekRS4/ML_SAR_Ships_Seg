@@ -1,7 +1,7 @@
 import logging
 import argparse
 
-from inference.model_optimization import optimize_model_with_aot_inductor
+from model_optimization.model_optimization import optimize_model_with_aot_inductor
 
 
 def parse_arguments() -> argparse.Namespace:
