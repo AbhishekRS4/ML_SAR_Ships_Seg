@@ -243,10 +243,7 @@ def train_sem_seg_pipeline(
 
     device = torch.device(device_str)
     if model_compile_mode != "uncompiled":
-        if model_compile_mode != "normal":
-            model = torch.compile(model, mode=model_compile_mode)
-        else:
-            model = torch.compile(model)
+        model = torch.compile(model, mode=model_compile_mode)
 
     if file_model_ckpt is not None:
         logging.info(
@@ -437,6 +434,7 @@ def train_sem_seg_pipeline(
             mlflow.log_metric("test_dice", test_dice, step=epoch)
             mlflow.log_metric("test_miou", test_miou, step=epoch)
 
+            gc.collect()
     # remove the empty directory
     path_dir_tmp_ckpt_model.rmdir()
     return
