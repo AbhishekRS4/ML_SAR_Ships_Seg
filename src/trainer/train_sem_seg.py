@@ -1,9 +1,11 @@
 import os
+import gc
 import time
 import torch
 import mlflow
 import logging
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 from pathlib import Path
@@ -396,6 +398,9 @@ def train_sem_seg_pipeline(
                     test_conf_matrix_fig.figure_,
                     f"test_conf_matrix_{epoch}.png",
                 )
+
+                plt.close(train_conf_matrix_fig.figure_)
+                plt.close(test_conf_matrix_fig.figure_)
 
                 model_file_name = path_dir_tmp_ckpt_model / f"{model_name}_{epoch}.pth"
                 torch.save(
