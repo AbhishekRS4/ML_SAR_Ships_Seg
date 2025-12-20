@@ -63,7 +63,9 @@ def optimize_model_with_aot_inductor(
             device = "cpu"
 
         model = model.to(device=device)
-        example_inputs = (torch.randn(1, num_in_channels, image_height, image_width, device=device),)
+        example_inputs = (
+            torch.randn(1, num_in_channels, image_height, image_width, device=device),
+        )
 
         exported_program = torch.export.export(
             model,
