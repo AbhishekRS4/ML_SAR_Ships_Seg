@@ -48,9 +48,10 @@ def optimize_model_with_aot_inductor(
         path_file_model_ckpt.parent
         / f"aot_optimized_{path_file_model_ckpt.name.split('.')[0]}.pt2"
     )
-    # path_file_aot_inductor_model = os.path.join(str(path_file_model_ckpt.parent), f"aot_optimized_{path_file_model_ckpt.name.split('.')[0]}.pt2")
 
     os.environ["CUDA_VISIBLE_DEVICES"] = which_gpu
+
+    num_in_channels = model_checkpoint["model_config"]["num_in_channels"]
 
     with torch.inference_mode():
         inductor_configs = {}
@@ -62,7 +63,7 @@ def optimize_model_with_aot_inductor(
             device = "cpu"
 
         model = model.to(device=device)
-        example_inputs = (torch.randn(1, 1, image_height, image_width, device=device),)
+        example_inputs = (torch.randn(1, num_in_channels, image_height, image_width, device=device),)
 
         exported_program = torch.export.export(
             model,
