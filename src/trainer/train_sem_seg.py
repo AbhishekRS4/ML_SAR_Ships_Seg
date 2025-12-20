@@ -5,19 +5,17 @@ import torch
 import mlflow
 import logging
 import numpy as np
+import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
 
 from pathlib import Path
-from copy import deepcopy
 from torch import GradScaler
-import torch.nn.functional as F
 from torch.optim import SGD, AdamW
 from typing import Union, Tuple, List
 from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import PolynomialLR
-from sklearn.metrics import ConfusionMatrixDisplay
 
 
 from loss_func.focal_loss import FocalLoss
