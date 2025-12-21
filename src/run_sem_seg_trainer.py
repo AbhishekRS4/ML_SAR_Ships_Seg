@@ -120,7 +120,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--num-epochs",
-        default=60,
+        default=200,
         type=int,
         help="number of epochs for which the model needs to be trained",
     )
@@ -144,7 +144,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--num-workers",
-        default=16,
+        default=8,
         type=int,
         help="num workers to be used in the dataloaders",
     )
