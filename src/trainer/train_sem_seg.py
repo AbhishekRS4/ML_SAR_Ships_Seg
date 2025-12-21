@@ -316,6 +316,7 @@ def train_sem_seg_pipeline(
         mlflow.log_param("dataset.dir_test_images", dir_test_images)
         mlflow.log_param("dataset.dir_test_labels", dir_test_labels)
         mlflow.log_param("dataset.batch_size", batch_size)
+        mlflow.log_param("dataset.num_workers", num_workers)
         mlflow.log_param("dataset.num_train_samples", len(list_train_images))
         mlflow.log_param("dataset.num_test_samples", len(list_test_images))
         mlflow.log_param("dataset.class_label_mapping", labels_display_logs)
