@@ -146,7 +146,7 @@ def parse_arguments() -> argparse.Namespace:
         "--num-workers",
         default=8,
         type=int,
-        help="num workers to be used in the dataloaders",
+        help="num workers to be used in the dataloaders (choose num_workers <= batch_size, physical CPU cores)",
     )
     parser.add_argument(
         "--num-in-channels",
