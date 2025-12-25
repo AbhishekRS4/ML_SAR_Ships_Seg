@@ -75,7 +75,7 @@ def train_nn(
         # update the scaler for the next iteration
         amp_scaler.update()
 
-    train_loss = float(running_train_loss) / num_train_batches
+    train_loss = running_train_loss.clone().detach().cpu().numpy() / num_train_batches
     (
         train_acc,
         train_f1,
@@ -85,9 +85,16 @@ def train_nn(
         train_dice,
         train_miou,
     ) = metrics_calculator.compute_metrics()
+
+    train_acc = train_acc.clone().detach().cpu().numpy()
+    train_f1 = train_f1.clone().detach().cpu().numpy()
+    train_precision = train_precision.clone().detach().cpu().numpy()
+    train_recall = train_recall.clone().detach().cpu().numpy()
     train_conf_mat = train_conf_mat.clone().detach().cpu().numpy()
+    train_dice = train_dice.clone().detach().cpu().numpy()
+    train_miou = train_miou.clone().detach().cpu().numpy()
     return (
-        train_loss,
+        float(train_loss),
         float(train_acc),
         float(train_f1),
         float(train_precision),
@@ -130,7 +137,7 @@ def test_nn(
 
             running_test_loss += loss
 
-    test_loss = float(running_test_loss) / num_test_batches
+    test_loss = running_test_loss.clone().detach().cpu().numpy() / num_test_batches
 
     (
         test_acc,
@@ -141,9 +148,16 @@ def test_nn(
         test_dice,
         test_miou,
     ) = metrics_calculator.compute_metrics()
+
+    test_acc = test_acc.clone().detach().cpu().numpy()
+    test_f1 = test_f1.clone().detach().cpu().numpy()
+    test_precision = test_precision.clone().detach().cpu().numpy()
+    test_recall = test_recall.clone().detach().cpu().numpy()
     test_conf_mat = test_conf_mat.clone().detach().cpu().numpy()
+    test_dice = test_dice.clone().detach().cpu().numpy()
+    test_miou = test_miou.clone().detach().cpu().numpy()
     return (
-        test_loss,
+        float(test_loss),
         float(test_acc),
         float(test_f1),
         float(test_precision),
@@ -215,7 +229,7 @@ def train_sem_seg_pipeline(
         dir_train_labels,
         dir_test_images,
         dir_test_labels,
-        batch_size,
+        batch_size=batch_size,
         num_workers=num_workers,
     )
 
