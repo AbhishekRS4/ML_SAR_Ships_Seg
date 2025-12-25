@@ -3,9 +3,10 @@ import logging
 import numpy as np
 import torchvision.transforms as transforms
 
-from skimage.io import imread
+
 from pathlib import Path, PosixPath
 from typing import List, Tuple, Union
+from torchvision.io import decode_image
 from torch.utils.data import Dataset, DataLoader
 
 
@@ -80,16 +81,15 @@ class HRSIDSemSegDataset(Dataset):
         file_label = self.path_dir_labels / self.list_files[idx]
 
         # load the image and convert it to tensor and preprocess it
-        image_arr = imread(file_image)
-        image_tensor = torch.from_numpy(image_arr[:, :, 0])
+        image_tensor = decode_image(file_image)
+        image_tensor = image_tensor[0, :, :]
         image_tensor = torch.unsqueeze(image_tensor, dim=0)
         image_tensor = preprocess_image_tensor(image_tensor)
         # 1 x H x W
 
         # load label and convert it to tensor
-        label_arr = imread(file_label)
-        label_tensor = torch.from_numpy(label_arr)
-        label_tensor = torch.unsqueeze(label_tensor, dim=0)
+        label_tensor = decode_image(file_label)
+        # label_tensor = torch.unsqueeze(label_tensor, dim=0)
         # 1 x H x W
 
         # apply augmentation
