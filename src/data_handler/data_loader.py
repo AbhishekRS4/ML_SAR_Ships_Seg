@@ -124,8 +124,30 @@ def get_dataloaders_for_training(
     num_workers: int = 16,
 ) -> Tuple[DataLoader, DataLoader]:
     """
-    return the train and test dataloaders
+    function to create and return the train and test dataloaders
     to be used in the training pipeline
+
+    ---------
+    Arguments
+    ---------
+    dir_train_images: str
+        full path to the directory containing the train set images
+    dir_train_labels: str
+        full path to the directory containing the train set labels
+    dir_test_images: str
+        full path to the directory containing the test set images
+    dir_test_labels: str
+        full path to the directory containing the test set labels
+    batch_size: int
+        batch size to be used to create the train and test dataloaders (default: 32)
+    num_workers: int
+        num workers to be used in the train and test dataloaders (default: 16)
+
+    -------
+    Returns
+    -------
+    (train_loader, test_loader): Tuple[DataLoader, DataLoader]
+        train and test set dataloaders
     """
     path_dir_train_images = Path(dir_train_images)
     path_dir_train_labels = Path(dir_train_labels)
