@@ -34,13 +34,38 @@ def train_nn(
     model: Union[ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus],
     device: torch.device,
     train_loader: DataLoader,
-    criterion: CrossEntropyLoss,
+    criterion: Union[CrossEntropyLoss, FocalLoss],
     optimizer: Union[SGD, AdamW],
     amp_scaler: GradScaler,
     metrics_calculator: SemSegMetricsCalculator,
-) -> Tuple[float, float, float, float, float, np.ndarray]:
+) -> Tuple[float, float, float, float, float, float, float, np.ndarray]:
     """
     train a neural network model
+
+    ---------
+    Arguments
+    ---------
+    model: Union[ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus]
+        model object
+    device: torch.device
+        indicates torch device
+    train_loader: DataLoader
+        train data loader object
+    criterion: Union[CrossEntropyLoss, FocalLoss]
+        criterion object for the loss function that needs to be used for training
+    optimizer: Union[SGD, AdamW]
+        optimizer object to be used for training
+    amp_scaler: GradScaler
+        AMP scaler to be used for training
+    metrics_calculator: SemSegMetricsCalculator
+        object for the metrics calculator
+
+    -------
+    Returns
+    -------
+    (train_loss, train_acc, train_f1, train_precision, train_recall, train_dice, train_miou, train_conf_mat):
+        Tuple[float, float, float, float, float, float, float, np.ndarray]
+        a tuple of metrics for the train set
     """
     model.to(device)
     model.train()
@@ -111,9 +136,30 @@ def test_nn(
     test_loader: DataLoader,
     criterion: CrossEntropyLoss,
     metrics_calculator: SemSegMetricsCalculator,
-) -> Tuple[float, float, float, float, float, np.ndarray]:
+) -> Tuple[float, float, float, float, float, float, float, np.ndarray]:
     """
     test a neural network model
+
+    ---------
+    Arguments
+    ---------
+    model: Union[ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus]
+        model object
+    device: torch.device
+        indicates torch device
+    test_loader: DataLoader
+        test data loader object
+    criterion: Union[CrossEntropyLoss, FocalLoss]
+        criterion object for the loss function that needs to be used to compute loss for the test set
+    metrics_calculator: SemSegMetricsCalculator
+        object for the metrics calculator
+
+    -------
+    Returns
+    -------
+    (test_loss, test_acc, test_f1, test_precision, test_recall, test_dice, test_miou, test_conf_mat):
+        Tuple[float, float, float, float, float, float, float, np.ndarray]
+        a tuple of metrics for the test set
     """
     model.to(device)
     model.eval()
@@ -196,7 +242,61 @@ def train_sem_seg_pipeline(
     model_task: str = "semantic_segmentation",
 ) -> None:
     """
-    main model train pipeline for vanilla style training for any type of NN
+    main model train pipeline for semantic segmentation task
+
+    ---------
+    Arguments
+    ---------
+    dir_train_images: str
+        full path to the directory containing the train set images
+    dir_train_labels: str
+        full path to the directory containing the train set labels
+    dir_test_images: str
+        full path to the directory containing the test set images
+    dir_test_labels: str
+        full path to the directory containing the test set labels
+    dir_tmp_ckpt_model: str
+        full path to the directory where temporary model checkpoint file needs to be saved
+    batch_size: int
+        batch size to be used for training the model
+    num_classes: int
+        number of classes in the dataset fo which the model needs to be trained
+    labels_display_logs: List[str]
+        the list of label names to be used for display in the confusion matrix figures
+    class_weights: List[float]
+        the list of class weights to be used in the loss function for handling class imbalance
+    experiment_name: str
+        MLFlow experiment name
+    run_name: str
+        MLFlow run name
+    model_name: str
+        model name
+    loss_fn: str
+        loss function to be used for training
+    optimizer_name: str
+        optimizer to be used for training
+    learning_rate: float
+        initial learning rate to be used for training (default:  1e-3)
+    weight_decay: float
+        weight decay to be used for training (default: 1e-5)
+    num_epochs: int
+        number of epochs for which the model needs to be trained (default: 100)
+    checkpoint_freq: int
+        model checkpoint frequency (default: 5)
+    checkpoint_skip: int
+        initial number of epochs for which the checkpoint need to be skipped (default: 20)
+    which_gpu: str
+        the GPU number to be used for training the model (default: "0")
+    num_workers: int
+        number of workers to be used in the dataloader (default: 8)
+    num_in_channels: int
+        number of input channels (default: 1)
+    model_compile_mode: str
+        model compile model (default: "normal")
+    file_model_ckpt: Union[str, None]
+        full path to intermediate model checkpoint that needs to be used in case of finetuning (default: None)
+    model_task: str
+        the task for which the model is being trained (default: "semantic_segmentation")
     """
     path_dir_tmp_ckpt_model = Path(dir_tmp_ckpt_model)
     if not path_dir_tmp_ckpt_model.is_dir():
