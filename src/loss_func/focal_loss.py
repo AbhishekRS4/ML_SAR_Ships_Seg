@@ -18,7 +18,7 @@ class FocalLoss(_Loss):
         ----------
         Attributes
         ----------
-        weight: Union[Tensor, None]
+        weight: Union[torch.Tensor, None]
             a torch tensor of class weights to be applied during training (default: None)
         gamma: int
             indicates the importance to be given to the misclassified classes (default: 2)
@@ -37,12 +37,18 @@ class FocalLoss(_Loss):
         ---------
         Arguments
         ---------
-        pred_logits: Tensor
+        pred_logits: torch.Tensor
             a tensor of predicted logits
-        target_labels: Tensor
+        target_labels: torch.Tensor
             a tensor of target labels
         dim: int
             dimension along which the softmax needs to be applied (default: 1)
+
+        -------
+        Returns
+        -------
+        focal_loss: torch.Tensor
+            a tensor containing the focal loss
         """
         log_prob = F.log_softmax(pred_logits, dim=dim)
         prob = torch.exp(log_prob)
