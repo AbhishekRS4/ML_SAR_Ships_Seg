@@ -20,6 +20,22 @@ def optimize_model_with_aot_inductor(
 ) -> None:
     """
     function for optimizing the model with AOT inductor for inference and saving the model file
+
+    ---------
+    Arguments
+    ---------
+    file_model_ckpt: str
+        full path to the model checkpoint file
+    model_name: str
+        model name for which the achitecture needs to be initialized
+    image_height: int
+        image height
+    image_width: int
+        image width
+    which_gpu: str
+        indicates the GPU number that needs to be used (default: "0")
+    model_compile_mode: str
+        model compile mode (default: "reduce-overhead")
     """
     path_file_model_ckpt = Path(file_model_ckpt)
     if not path_file_model_ckpt.is_file():
