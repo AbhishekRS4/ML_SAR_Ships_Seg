@@ -28,7 +28,7 @@ class SemSegMetricsCalculator:
         task: str
             a string indicating the task (default: multiclass)
         num_classes: int
-            an integer with the number of classes
+            an integer with the number of classes (default: 2)
         average: str
             a string indicating the type of averaging that needs to be performed for multi-class scenario (default: weighted)
         """
@@ -76,9 +76,9 @@ class SemSegMetricsCalculator:
         ---------
         Arguments
         ---------
-        true_labels: Tensor
+        true_labels: torch.Tensor
             a torch tensor of true labels
-        pred_labels: Tensor
+        pred_labels: torch.Tensor
             a torch tensor of predicted labels
         """
         self.dice_score.update(pred_labels, true_labels)
@@ -105,7 +105,7 @@ class SemSegMetricsCalculator:
         -------
         (acc_sc, f1_sc, pre_sc, rec_sc, conf_matrix, dice_score, mean_iou):
             Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor]
-            a tuple of base metrics like accuracy, f1, precision, recall etc.
+            a tuple of base metrics tensors like accuracy, f1, precision, recall etc.
         """
         return (
             self.accuracy_score.compute(),
@@ -152,6 +152,8 @@ def get_confusion_matrix_figure(
         a boolean indicating whether to scale the confusion matrix to percentage (default: True)
     cmap: str
         a string indicating the cmap to be used in the confusion matrix plot (default: blues)
+    font_size: int
+        indicates the font size to be used for the figure title, axes names etc. (default: 16)
 
     -------
     Returns
