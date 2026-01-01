@@ -22,16 +22,18 @@
 * The label images are prepared using the COCO format JSON label files
 * The optimization used is the ThreadPoolExecutor to generate label images using multiple worker threads. The choice of ThreadPoolExecutor is due to the nature of the task that involes I/O bound operations i.e. saving the images to the disk
 * The following table shows the comparison of speedup with optimized code
+
 | Optimization Method | Time taken (in sec.) |
-| --------------------|----------------------|
+| ------------------- | -------------------- |
 | Without any optimization |  21.80  |
 | With ThreadPoolExecutor  |   9.32  |
 
 ## Model optimization using AOT inductor
 * The AOT inductor model compilation can result in the reduction in the initial inference start time
 * The following table shows the starting inference time speedup with AOT inductor model compilation
-| Model method  | Starting inference time (milli sec.) |
-| ------------- | ------------------------------------ |
+
+| Model method | Starting inference time (milli sec.) |
+| ------------ | ------------------------------------ |
 | Without AOT inductor compilation | 3621 |
 | With AOT inductor compilation | 179.69 |
 
