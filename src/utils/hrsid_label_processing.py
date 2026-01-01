@@ -43,9 +43,11 @@ def save_label_per_image(
                     rles = mask_util.frPyObjects([poly], height, width)
                     sem_seg_lbl_this_instance = mask_util.decode(rles)
                     sem_seg_lbl_this_instance = np.squeeze(sem_seg_lbl_this_instance)
+                    """
                     logging.info(
                         f"file_name: {file_name}, ann_index: {ann_index}, height: {height}, width: {width}, num pixels: {np.sum(sem_seg_lbl_this_instance)}, {sem_seg_lbl.shape}"
                     )
+                    """
                     # Add instance to the final label.
                     # Use a unique value for each instance for multi-class labels.
 
@@ -70,7 +72,7 @@ def save_label_per_image(
     path_output_lbl_file = path_output_lbls / file_name.replace(
         ".jpeg", ".png"
     ).replace(".jpg", ".png")
-    logging.info(f"output file: {path_output_lbl_file}")
+    # logging.info(f"output file: {path_output_lbl_file}")
     lbl_image.save(path_output_lbl_file)
     return
 
@@ -100,7 +102,7 @@ def hrsid_json_to_lbl_image(
         None
     """
     logging.info(
-        f"generating lbl images for the HRSID dataset, label_type: {label_type}"
+        f"generating lbl images for the HRSID dataset, label_type: {label_type}, num workers: {num_workers}"
     )
     logging.info(f"input json label file: {file_json}")
 
