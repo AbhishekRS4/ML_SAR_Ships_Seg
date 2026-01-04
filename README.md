@@ -2,7 +2,7 @@
 
 ## Info
 * The project is regarding the segmentation of ships in the processed images extracted from the Synthetic Aperture Radar (SAR) data
-* This project involves learning some new things like using KServe for deployment of the ML model along with other model optimization strategies
+* This project involves learning some new things like various model optimization strategies and using KServe for deployment of the ML model
 
 ## Instructions to run code for data preparation
 * Run [src/create_label_images.py](src/create_label_images.py) to generate label images from the COCO style format JSON labels
@@ -23,19 +23,48 @@
 * The optimization used is the ThreadPoolExecutor to generate label images using multiple worker threads. The choice of ThreadPoolExecutor is due to the nature of the task that involes I/O bound operations i.e. saving the images to the disk
 * The following table shows the comparison of speedup with optimized code
 
-| Optimization Method | Time taken (in sec.) |
-| ------------------- | -------------------- |
+| Optimization method | Avg. Time taken (in sec.) |
+| ------------------- | ------------------------- |
 | Without any optimization |  21.80  |
 | With ThreadPoolExecutor  |   9.32  |
 
-## Model optimization using AOT inductor
-* The AOT inductor model compilation can result in the reduction in the initial inference start time
-* The following table shows the starting inference time speedup with AOT inductor model compilation
+## Model training optimization using torch.compile
+* The torch.compile can be used for optimizing the model training that can effectively result in reduction in the training time
+* The following table shows the training time per epoch for the ConvNextV2-Tiny-DeepLabeV3+ model
 
-| Model method | Starting inference time (milli sec.) |
+| Model compile method  | Avg. Time taken per epoch (in sec.) |
+| --------------------- | ----------------------------------- |
+| Reduce-overhead       |     520   |
+| Max-Autotune          |     490   |
+
+## Model optimization using AOT inductor
+* The AOT inductor model compilation can result in the reduction in the initial inference start time i.e. the inference cold start can be reduced significantly
+* The following table shows the starting inference time speedup with AOT inductor model compilation for the ConvNextV2-Tiny-DeepLabeV3+ model
+
+| Model method | Avg. starting [first, second] inference time (milli sec.) |
 | ------------ | ------------------------------------ |
-| Without AOT inductor compilation | 3621 |
-| With AOT inductor compilation | 179.69 |
+| Without AOT inductor compilation | 3645.17, 210.14 |
+| With AOT inductor compilation | 186.1, 30.56 |
+
+## Visualization generation optimization
+* The visualization generation pipeline is optimized using ProcessPoolExecutor. This is the preferred choice since Matplotlib is not thread safe
+* The following table shows the time taken for generating the visualizations for the test set containing around 2000 images
+
+| Num workers | Time taken (in sec.) |
+| ----------- | -------------------- |
+| 4 | 169.81 |
+| 8 | 86.65 |
 
 ## Model performance quantitative metrics
-* The following table shows the quantitative metrics of the model performance
+* The following table shows the quantitative metrics of the ConvNextV2-Tiny-DeepLabeV3+ model performance
+
+| Model name | Train mIoU | Train Dice | Test mIoU | Test Dice |
+| ---------- | ---------- | ---------- | --------- | --------- |
+| ConvNextV2-Tiny-DeepLabV3+ | 0.7444 | 0.9968 | 0.7448 | 0.9959|
+
+## Model performance qualitative visualization results - sample test set predictions
+![Sample predicted mask 1](images/P0001_2400_3200_4800_5600.png?raw=true)
+![Sample predicted mask 2](images/P0011_600_1400_8189_8989.png?raw=true)
+![Sample predicted mask 3](images/P0017_600_1400_8400_9200.png?raw=true)
+![Sample predicted mask 4](images/P0025_1200_2000_10189_10989.png?raw=true)
+![Sample predicted mask 5](images/P0063_1200_2000_7800_8600.png?raw=true)
