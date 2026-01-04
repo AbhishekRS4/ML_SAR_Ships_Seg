@@ -17,6 +17,9 @@ def generate_n_save_vis(
     """
     Docstring for generate_n_save_vis
 
+    ---------
+    Arguments
+    ---------
     path_file_img: PosixPath
         full path to the image file
     path_file_gt_lbl: PosixPath
@@ -57,6 +60,9 @@ def save_visualization_pipeline(
     """
     Docstring for save_visualization_pipeline
 
+    ---------
+    Arguments
+    ---------
     dir_images: str
         full path to the directory containing the images
     dir_gt_lbl: str
