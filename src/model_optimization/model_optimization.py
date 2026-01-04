@@ -145,6 +145,7 @@ def optimize_model_with_onnx(
     model.eval()
 
     original_model = model._orig_mod
+    original_model.load_state_dict(model._orig_mod.state_dict())
     original_model.eval()
 
     num_in_channels = model_checkpoint["model_config"]["num_in_channels"]
