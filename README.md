@@ -68,3 +68,5 @@
 ![Sample predicted mask 3](images/P0017_600_1400_8400_9200.png?raw=true)
 ![Sample predicted mask 4](images/P0025_1200_2000_10189_10989.png?raw=true)
 ![Sample predicted mask 5](images/P0063_1200_2000_7800_8600.png?raw=true)
+![Sample predicted mask 6](images/P0082_3000_3800_600_1400.png?raw=true)
+![Sample predicted mask 6](images/P0083_1800_2600_1800_2600.png?raw=true)
