@@ -29,7 +29,7 @@ def inference_pipeline(
     which_gpu: str = "0",
 ) -> None:
     """
-    function for inference pipeline with normal model ckpt
+    function for inference pipeline with normal torch model ckpt
 
     ---------
     Arguments
@@ -183,7 +183,7 @@ def onnx_inference_pipeline(
     which_gpu: str = "0",
 ) -> None:
     """
-    Docstring for onnx_inference_pipeline
+    function for inference with ONNX model ckpt
 
     ---------
     Arguments
@@ -254,7 +254,7 @@ def onnx_inference_pipeline_torch_io_binding(
     which_gpu: str = "0",
 ) -> None:
     """
-    Docstring for onnx_inference_pipeline
+    function for inference with ONNX model ckpt with torch tensor I/O binding
 
     ---------
     Arguments

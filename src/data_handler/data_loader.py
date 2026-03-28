@@ -21,7 +21,7 @@ class HRSIDSemSegDataset(Dataset):
         which_set: str = "train",
     ):
         """
-        HRSIDDataset class to load satellite image dataset in zarr format for multiple timesteps
+        HRSIDDataset class to load satellite image dataset in png format
 
         ----------
         Attributes
