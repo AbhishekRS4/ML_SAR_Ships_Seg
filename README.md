@@ -45,7 +45,7 @@
 
 ## Model inference using AOT inductor
 * The AOT inductor model compilation can result in the reduction in the initial inference start time i.e. the inference cold start can be reduced significantly
-* The following table shows the starting inference time speedup with AOT inductor model compilation for the ConvNextV2-Tiny-DeepLabV3+ model
+* The following table shows the starting inference time speedup with AOT inductor model compilation for the ConvNextV2-Tiny-DeepLabV3+ model. It can be clearly observed that AOT inductor compiled model reduced the starting inference time by a significant amount
 
 | Model method | Starting [first, second data samples] inference time (milli sec.) | Avg. inference time [other data samples] (milli sec.) |
 | ------------ | ------------------------------------ | ---------------|
@@ -55,7 +55,7 @@
 
 ## Model inference using ONNX
 * The ONNX model optimization is used to benchmark the inference time on the same GPU
-* The following table shows the starting inference time speedup with ONNX model optimization for the ConvNextV2-Tiny-DeepLabV3+ model
+* The following table shows the starting inference time speedup with ONNX model optimization for the ConvNextV2-Tiny-DeepLabV3+ model. It can be clearly seen that the avg inference time with ONNX model is higher than that of normal torch inference and AOT inductor compiled inference
 
 | Model method | Starting [first, second data samples] inference time (milli sec.) | Avg. inference time [other data samples] (milli sec.) |
 | ------------ | ------------------------------------ | ---------------|
