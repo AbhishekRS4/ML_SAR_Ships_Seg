@@ -82,6 +82,7 @@
 
 
 ## Model performance qualitative visualization results - sample test set predictions
+* The following seven visualizations show the qualitative results of the model performance
 ![Sample predicted mask 1](images/P0001_2400_3200_4800_5600.png?raw=true)
 ![Sample predicted mask 2](images/P0011_600_1400_8189_8989.png?raw=true)
 ![Sample predicted mask 3](images/P0017_600_1400_8400_9200.png?raw=true)
@@ -89,4 +90,5 @@
 ![Sample predicted mask 5](images/P0063_1200_2000_7800_8600.png?raw=true)
 ![Sample predicted mask 6](images/P0082_3000_3800_600_1400.png?raw=true)
 ![Sample predicted mask 7](images/P0083_1800_2600_1800_2600.png?raw=true)
+* The following visualization show the results of different inference methods to shows the inference predictions are consistent across different methods
 ![Sample predicted mask 8](images/inference_results_comparison.png?raw=true)
