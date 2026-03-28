@@ -169,6 +169,10 @@ def optimize_model_with_onnx(
             input_names=["input"],  # Rename inputs for the ONNX model
             output_names=["output"],  # Rename outpus for the ONNX model
             dynamo=True,  # True or False to select the exporter to use
+            dynamic_axes={
+                "input": {0: "batch_size"},
+                "output": {0: "batch_size"},
+            },
         )
         onnx_program.optimize()
         onnx_program.save(path_file_model_ckpt_onnx)
