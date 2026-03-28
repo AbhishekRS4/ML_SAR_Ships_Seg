@@ -90,5 +90,5 @@
 ![Sample predicted mask 5](images/P0063_1200_2000_7800_8600.png?raw=true)
 ![Sample predicted mask 6](images/P0082_3000_3800_600_1400.png?raw=true)
 ![Sample predicted mask 7](images/P0083_1800_2600_1800_2600.png?raw=true)
-* The following visualization show the results of different inference methods to shows the inference predictions are consistent across different methods
+* The following visualization show the results of different inference methods to show that the inference predictions are consistent across different methods
 ![Sample predicted mask 8](images/inference_results_comparison.png?raw=true)
