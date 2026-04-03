@@ -21,7 +21,6 @@ class BasicBlock(nn.Module):
         base_width: int = 64,
         dilation: int = 1,
         activation: str = "gelu",
-        norm_layer: str = "none",
     ) -> None:
         super().__init__()
 
@@ -33,27 +32,19 @@ class BasicBlock(nn.Module):
 
         self.activation_func = get_activation_func(activation=activation)
 
-        if norm_layer == "none":
-            self.conv1 = nn.Sequential(
-                conv3x3(inplanes, planes, stride),
-            )
+        norm_layer = nn.BatchNorm2d
+        self.norm1 = norm_layer(planes)
+        self.norm2 = norm_layer(planes)
 
-            self.conv2 = nn.Sequential(
-                conv3x3(planes, planes),
-            )
-        else:
-            norm_layer = nn.BatchNorm2d
-            self.norm1 = norm_layer(planes)
-            self.norm2 = norm_layer(planes)
+        self.conv1 = nn.Sequential(
+            conv3x3(inplanes, planes, stride),
+            self.norm1,
+        )
 
-            self.conv1 = nn.Sequential(
-                conv3x3(inplanes, planes, stride),
-                self.norm1,
-            )
-            self.conv2 = nn.Sequential(
-                conv3x3(planes, planes),
-                self.norm2,
-            )
+        self.conv2 = nn.Sequential(
+            conv3x3(planes, planes),
+            self.norm2,
+        )
 
         self.downsample = downsample
         self.stride = stride
@@ -220,7 +211,6 @@ class CustomResNet(nn.Module):
                 self.groups,
                 self.base_width,
                 previous_dilation,
-                norm_layer,
                 activation=activation,
             )
         )
