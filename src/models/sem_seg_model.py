@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from typing import List
+from typing import List, Union
 from torch.nn import functional as F
 
 
@@ -103,7 +103,7 @@ class ResNet34UNet(nn.Module):
         num_in_channels: int,
         num_classes: int,
         activation: str = "gelu",
-        norm_layer: str = "none",
+        norm_layer: Union[str, None] = None,
         dropout_rate: float = 0.2,
         filters: List[int] = [64, 128, 256, 512],
     ):
@@ -112,7 +112,6 @@ class ResNet34UNet(nn.Module):
         resnet34_encoder = resnet34(
             num_in_channels,
             activation=activation,
-            norm_layer=norm_layer,
             filters=filters,
         )
         self.filters = filters
