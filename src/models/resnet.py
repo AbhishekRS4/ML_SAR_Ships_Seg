@@ -223,7 +223,6 @@ class CustomResNet(nn.Module):
                     groups=self.groups,
                     base_width=self.base_width,
                     dilation=self.dilation,
-                    norm_layer=norm_layer,
                     activation=activation,
                 )
             )
