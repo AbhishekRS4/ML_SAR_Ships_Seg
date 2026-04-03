@@ -21,6 +21,7 @@ from torch.optim.lr_scheduler import PolynomialLR
 from loss_func.focal_loss import FocalLoss
 from data_handler.data_loader import get_dataloaders_for_training
 from models.sem_seg_model import (
+    ResNet34UNet,
     ConvNextV2TinyDeepLabV3Plus,
     ConvNextV2BaseDeepLabV3Plus,
 )
@@ -31,7 +32,9 @@ from metrics.compute_metrics import (
 
 
 def train_nn(
-    model: Union[ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus],
+    model: Union[
+        ResNet34UNet, ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus
+    ],
     device: torch.device,
     train_loader: DataLoader,
     criterion: Union[CrossEntropyLoss, FocalLoss],
@@ -131,7 +134,9 @@ def train_nn(
 
 
 def test_nn(
-    model: Union[ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus],
+    model: Union[
+        ResNet34UNet, ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus
+    ],
     device: torch.device,
     test_loader: DataLoader,
     criterion: CrossEntropyLoss,
@@ -341,6 +346,11 @@ def train_sem_seg_pipeline(
         )
     elif model_name == "convnext_v2_base_deeplab_v3+":
         model = ConvNextV2BaseDeepLabV3Plus(
+            num_in_channels,
+            num_classes,
+        )
+    elif model_name == "resnet34_unet":
+        model = ResNet34UNet(
             num_in_channels,
             num_classes,
         )
