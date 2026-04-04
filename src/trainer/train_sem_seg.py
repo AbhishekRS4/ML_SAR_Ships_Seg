@@ -22,6 +22,7 @@ from loss_func.focal_loss import FocalLoss
 from data_handler.data_loader import get_dataloaders_for_training
 from models.sem_seg_model import (
     ResNet34UNet,
+    PSAResNet34UNet,
     ConvNextV2TinyDeepLabV3Plus,
     ConvNextV2BaseDeepLabV3Plus,
 )
@@ -351,6 +352,11 @@ def train_sem_seg_pipeline(
         )
     elif model_name == "resnet34_unet":
         model = ResNet34UNet(
+            num_in_channels,
+            num_classes,
+        )
+    elif model_name == "psa_resnet34_unet":
+        model = PSAResNet34UNet(
             num_in_channels,
             num_classes,
         )
