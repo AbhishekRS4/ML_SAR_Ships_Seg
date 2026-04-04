@@ -89,6 +89,7 @@ def parse_arguments() -> argparse.Namespace:
             "convnext_v2_tiny_deeplab_v3+",
             "convnext_v2_base_deeplab_v3+",
             "resnet34_unet",
+            "psa_resnet34_unet",
         ],
         type=str,
         help="the model that needs to be trained",
