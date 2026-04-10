@@ -17,6 +17,8 @@ from data_handler.data_processing import preprocess_image_tensor
 from models.sem_seg_model import (
     ConvNextV2TinyDeepLabV3Plus,
     ConvNextV2BaseDeepLabV3Plus,
+    ResNet34UNet,
+    PSAResNet34UNet,
 )
 
 
@@ -71,6 +73,12 @@ def inference_pipeline(
         model = ConvNextV2TinyDeepLabV3Plus(**model_checkpoint["model_config"])
     elif model_name == "convnext_v2_base_deeplab_v3+":
         model = ConvNextV2BaseDeepLabV3Plus(**model_checkpoint["model_config"])
+    elif model_name == "resnet34_unet":
+        model = ResNet34UNet(**model_checkpoint["model_config"])
+    elif model_name == "psa_resnet34_unet":
+        model = PSAResNet34UNet(**model_checkpoint["model_config"])
+    else:
+        logging.error(f"unidentified option for model_name={model_name}")
 
     if model_compile_mode != "uncompiled":
         if model_compile_mode != "normal":
