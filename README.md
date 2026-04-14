@@ -1,4 +1,4 @@
-# SARShips
+# SAR Ships Segmentation
 
 ## Info
 * The project is regarding the segmentation of ships in the processed images extracted from the Synthetic Aperture Radar (SAR) data
