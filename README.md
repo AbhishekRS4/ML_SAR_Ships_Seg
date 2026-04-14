@@ -35,7 +35,7 @@
 
 ## Model training optimization using torch.compile
 * The torch.compile can be used for optimizing the model training that can effectively result in reduction in the training time
-* The following table shows the training time per epoch for the ConvNextV2-Tiny-DeepLabV3+ model
+* The following table shows the training time per epoch for the **ConvNextV2-Tiny-DeepLabV3+** model
 
 | Model compile method  | Avg. Time taken per epoch (in sec.) |
 | --------------------- | ----------------------------------- |
@@ -45,7 +45,7 @@
 
 ## Model inference using AOT inductor
 * The AOT inductor model compilation can result in the reduction in the initial inference start time i.e. the inference cold start can be reduced significantly
-* The following table shows the starting inference time speedup with AOT inductor model compilation for the ConvNextV2-Tiny-DeepLabV3+ model. It can be clearly observed that AOT inductor compiled model reduced the starting inference time by a significant amount
+* The following table shows the starting inference time speedup with AOT inductor model compilation for the **ConvNextV2-Tiny-DeepLabV3+** model. It can be clearly observed that AOT inductor compiled model reduced the starting inference time by a significant amount
 
 | Model method | Starting [first, second data samples] inference time (milli sec.) | Avg. inference time [other data samples] (milli sec.) |
 | ------------ | ------------------------------------ | ---------------|
@@ -55,7 +55,7 @@
 
 ## Model inference using ONNX
 * The ONNX model optimization is used to benchmark the inference time on the same GPU
-* The following table shows the starting inference time speedup with ONNX model optimization for the ConvNextV2-Tiny-DeepLabV3+ model. It can be clearly seen that the avg inference time with ONNX model is higher than that of normal torch inference and AOT inductor compiled inference
+* The following table shows the starting inference time speedup with ONNX model optimization for the **ConvNextV2-Tiny-DeepLabV3+** model. It can be clearly seen that the avg inference time with ONNX model is higher than that of normal torch inference and AOT inductor compiled inference
 
 | Model method | Starting [first, second data samples] inference time (milli sec.) | Avg. inference time [other data samples] (milli sec.) |
 | ------------ | ------------------------------------ | ---------------|
@@ -78,17 +78,27 @@
 
 | Model name | Train mIoU | Train Dice | Test mIoU | Test Dice |
 | ---------- | ---------- | ---------- | --------- | --------- |
-| ConvNextV2-Tiny-DeepLabV3+ | 0.7444 | 0.9968 | 0.7448 | 0.9959|
+| ConvNextV2-Tiny-DeepLabV3+ | 0.7444 | 0.9968 | 0.7448 | 0.9959 |
+| ResNet34-UNet              | 0.7740 | 0.9973 | 0.7846 | 0.9969 |
+| PSAResNet34-UNet           | 0.7571 | 0.9965 | 0.7683 | 0.9962 |
 
 
 ## Model performance qualitative visualization results - sample test set predictions
-* The following seven visualizations show the qualitative results of the model performance
-![Sample predicted mask 1](images/P0001_2400_3200_4800_5600.png?raw=true)
-![Sample predicted mask 2](images/P0011_600_1400_8189_8989.png?raw=true)
-![Sample predicted mask 3](images/P0017_600_1400_8400_9200.png?raw=true)
-![Sample predicted mask 4](images/P0025_1200_2000_10189_10989.png?raw=true)
-![Sample predicted mask 5](images/P0063_1200_2000_7800_8600.png?raw=true)
-![Sample predicted mask 6](images/P0082_3000_3800_600_1400.png?raw=true)
-![Sample predicted mask 7](images/P0083_1800_2600_1800_2600.png?raw=true)
-* The following visualization show the results of different inference methods to show that the inference predictions are consistent across different methods
-![Sample predicted mask 8](images/inference_results_comparison.png?raw=true)
+* The following seven visualizations show the qualitative results of the ConvNextV2-Tiny-DeepLabV3+ model performance
+![Sample predicted mask 1](images/ConvNextV2-Tiny-DeepLabV3+/P0001_2400_3200_4800_5600.png?raw=true)
+![Sample predicted mask 2](images/ConvNextV2-Tiny-DeepLabV3+/P0011_600_1400_8189_8989.png?raw=true)
+![Sample predicted mask 3](images/ConvNextV2-Tiny-DeepLabV3+/P0017_600_1400_8400_9200.png?raw=true)
+![Sample predicted mask 4](images/ConvNextV2-Tiny-DeepLabV3+/P0025_1200_2000_10189_10989.png?raw=true)
+![Sample predicted mask 5](images/ConvNextV2-Tiny-DeepLabV3+/P0063_1200_2000_7800_8600.png?raw=true)
+![Sample predicted mask 6](images/ConvNextV2-Tiny-DeepLabV3+/P0082_3000_3800_600_1400.png?raw=true)
+![Sample predicted mask 7](images/ConvNextV2-Tiny-DeepLabV3+/P0083_1800_2600_1800_2600.png?raw=true)
+* The following visualization show the results of different inference methods to show that the inference predictions are consistent across different methods using ConvNextV2-Tiny-DeepLabV3+ model
+![Sample predicted mask 8](images/ConvNextV2-Tiny-DeepLabV3+/inference_results_comparison.png?raw=true)
+* The following seven visualizations show the qualitative results of the ResNet34-UNet model performance
+![Sample predicted mask 1](images/ResNet34-UNet/P0001_2400_3200_4800_5600.png?raw=true)
+![Sample predicted mask 2](images/ResNet34-UNet/P0011_600_1400_8189_8989.png?raw=true)
+![Sample predicted mask 3](images/ResNet34-UNet/P0017_600_1400_8400_9200.png?raw=true)
+![Sample predicted mask 4](images/ResNet34-UNet/P0025_1200_2000_10189_10989.png?raw=true)
+![Sample predicted mask 5](images/ResNet34-UNet/P0063_1200_2000_7800_8600.png?raw=true)
+![Sample predicted mask 6](images/ResNet34-UNet/P0082_3000_3800_600_1400.png?raw=true)
+![Sample predicted mask 7](images/ResNet34-UNet/P0083_1800_2600_1800_2600.png?raw=true)
