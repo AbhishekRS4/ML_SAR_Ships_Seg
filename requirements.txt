@@ -10,3 +10,5 @@ mlflow==2.20.4
 onnxruntime-gpu==1.23.2
 onnx==1.20.0
 onnxscript==0.5.7
+torch_tensorrt==2.10.0
+tensorrt==10.14.1.48
