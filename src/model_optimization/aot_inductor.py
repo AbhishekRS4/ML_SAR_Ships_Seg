@@ -69,7 +69,7 @@ def optimize_model_with_aot_inductor(
 
     path_file_aot_inductor_model = (
         path_file_model_ckpt.parent
-        / f"aot_optimized_{path_file_model_ckpt.name.split('.')[0]}.pt2"
+        / f"aot_inductor_optimized_{path_file_model_ckpt.name.split('.')[0]}.pt2"
     )
 
     os.environ["CUDA_VISIBLE_DEVICES"] = which_gpu
