@@ -1,7 +1,7 @@
 import logging
 import argparse
 
-from model_optimization.model_optimization import optimize_model_with_aot_inductor
+from model_optimization.aot_inductor import optimize_model_with_aot_inductor
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -17,7 +17,12 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--model-name",
         default="convnext_v2_tiny_deeplab_v3+",
-        choices=["convnext_v2_tiny_deeplab_v3+", "convnext_v2_base_deeplab_v3+"],
+        choices=[
+            "convnext_v2_tiny_deeplab_v3+",
+            "convnext_v2_base_deeplab_v3+",
+            "resnet34_unet",
+            "psa_resnet34_unet",
+        ],
         type=str,
         help="the model that needs to be trained",
     )
