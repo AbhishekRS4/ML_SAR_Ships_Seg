@@ -1,7 +1,7 @@
 import logging
 import argparse
 
-from inference.infer import aot_inductor_inference_pipeline
+from inference.infer_aot_inductor import aot_inductor_inference_pipeline
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -25,7 +25,7 @@ def parse_arguments() -> argparse.Namespace:
         "--file-model-ckpt",
         default=None,
         type=str,
-        help="full path to the checkpoint file to load for finetuning the model",
+        help="full path to the checkpoint file to load for the inference",
     )
     parser.add_argument(
         "--which-gpu",
