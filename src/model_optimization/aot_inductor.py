@@ -2,6 +2,7 @@ import os
 import time
 import torch
 import logging
+import torch._dynamo
 
 from pathlib import Path
 from models.sem_seg_model import (
@@ -39,6 +40,8 @@ def optimize_model_with_aot_inductor(
     model_compile_mode: str
         model compile mode (default: "reduce-overhead")
     """
+    torch._dynamo.config.suppress_errors = True
+
     path_file_model_ckpt = Path(file_model_ckpt)
     if not path_file_model_ckpt.is_file():
         logging.error(f"file not found: {path_file_model_ckpt}")
