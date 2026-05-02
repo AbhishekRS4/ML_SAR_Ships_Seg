@@ -1,7 +1,7 @@
 import logging
 import argparse
 
-from inference.infer import (
+from inference.infer_onnx import (
     onnx_inference_pipeline,
     onnx_inference_pipeline_torch_io_binding,
 )
@@ -28,7 +28,7 @@ def parse_arguments() -> argparse.Namespace:
         "--file-model-onnx",
         default=None,
         type=str,
-        help="full path to the checkpoint file to load for finetuning the model",
+        help="full path to the checkpoint file to load for the inference",
     )
     parser.add_argument(
         "--which-gpu",
