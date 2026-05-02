@@ -24,7 +24,7 @@
 
 ## Label preparation code optimization
 * The label images are prepared using the COCO format JSON label files
-* The optimization used is the ThreadPoolExecutor to generate label images using multiple worker threads. The choice of ThreadPoolExecutor is due to the nature of the task that involes I/O bound operations i.e. saving the images to the disk
+* The optimization used is the `ThreadPoolExecutor` to generate label images using multiple worker threads. The choice of `ThreadPoolExecutor` is due to the nature of the task that involes I/O bound operations i.e. saving the images to the disk and the operation is thread-safe
 * The following table shows the comparison of speedup with optimized code
 
 | Optimization method | Avg. Time taken (in sec.) |
@@ -63,8 +63,18 @@
 | ONNX model with IO binding | 634.98, 135.54 | 102.00 |
 
 
+## Model inference using TensorRT
+* The TensorRT model optimization is used to benchmark the inference time on the same GPU
+* For performing any experiments with TensorRT, use the following docker image - `nvcr.io/nvidia/pytorch:25.11-py3`
+* The dynamo frontend is used to compile the export program in both fp32 and mixed precisions for the **ConvNextV2-Tiny-DeepLabV3+** model. However, the mixed precision did not work since the inference results were all blank with mixed precision. Only fp32 worked with TensorRT
+* The following table shows the inference time with TensorRT optimization. It can be clearly observed that it did not give a significant improvement in the inference time
+| Model precision | Avg. inference time [other data samples] (milli sec.) |
+| ------------ | ------------------------------------ |
+| float32 | 37.5 |
+
+
 ## Visualization generation optimization
-* The visualization generation pipeline is optimized using ProcessPoolExecutor. This is the preferred choice since Matplotlib is not thread safe
+* The visualization generation pipeline is optimized using `ProcessPoolExecutor`. This is the preferred choice since Matplotlib is not thread-safe
 * The following table shows the time taken for generating the visualizations for the test set containing around 2000 images
 
 | Num workers | Time taken (in sec.) |
@@ -79,7 +89,7 @@
 | Model name | Train mIoU | Train Dice | Test mIoU | Test Dice |
 | ---------- | ---------- | ---------- | --------- | --------- |
 | ConvNextV2-Tiny-DeepLabV3+ | 0.7444 | 0.9968 | 0.7448 | 0.9959 |
-| ResNet34-UNet              | 0.7740 | 0.9973 | 0.7846 | 0.9969 |
+| ResNet34-UNet              | 0.7808 | 0.9976 | 0.7868 | 0.9971 |
 | PSAResNet34-UNet           | 0.7571 | 0.9965 | 0.7683 | 0.9962 |
 
 
