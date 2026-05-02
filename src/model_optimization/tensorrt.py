@@ -92,7 +92,14 @@ def optimize_model_with_tensorrt(
             ).cuda(),
         ]
     elif precision == "mixed":
-        # model = model.half()
+        """
+        model = model.half()
+        example_inputs = [
+            torch.randn(
+                (1, num_in_channels, image_height, image_width), dtype=torch.half
+            ).cuda(),
+        ]
+        """
 
         example_inputs = [
             torch.randn(
