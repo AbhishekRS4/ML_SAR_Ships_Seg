@@ -12,3 +12,4 @@ onnx==1.20.0
 onnxscript==0.5.7
 torch_tensorrt==2.10.0
 tensorrt==10.14.1.48
+tfrecord==1.14.6
