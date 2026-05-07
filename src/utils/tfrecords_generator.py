@@ -8,6 +8,7 @@ from tqdm import tqdm
 from typing import List
 from tfrecord import TFRecordWriter
 from pathlib import Path, PosixPath
+from tfrecord.tools.tfrecord2idx import create_indices
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 
@@ -131,6 +132,8 @@ def create_tfrecords(
         # Progress tracking
         for f in tqdm(as_completed(futures), total=len(futures), desc="Shards done"):
             results.append(f.result())
+
+    create_indices(dir_output)
 
     logging.info("\nFinished writing TFRecords")
     logging.info("\nOutput shards:")
