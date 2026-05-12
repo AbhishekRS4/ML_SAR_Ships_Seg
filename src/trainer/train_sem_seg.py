@@ -78,14 +78,14 @@ def train_nn(
     running_train_loss = torch.zeros(1).to(device)
     metrics_calculator.reset_metrics()
 
-    for msi_bands, label in train_loader:
-        msi_bands = msi_bands.to(device, dtype=torch.float32)
+    for image, label in train_loader:
+        image = image.to(device, dtype=torch.float32)
         label = label.to(device, dtype=torch.long)
 
         optimizer.zero_grad()
 
         with torch.autocast(device_type=device.type, dtype=torch.bfloat16):
-            pred_logits = model(msi_bands)
+            pred_logits = model(image)
             loss = criterion(pred_logits, label)
 
             pred_probs = F.softmax(pred_logits, dim=1)
@@ -175,11 +175,11 @@ def test_nn(
     metrics_calculator.reset_metrics()
 
     with torch.no_grad():
-        for msi_bands, label in test_loader:
-            msi_bands = msi_bands.to(device, dtype=torch.float32)
+        for image, label in test_loader:
+            image = image.to(device, dtype=torch.float32)
             label = label.to(device, dtype=torch.long)
 
-            pred_logits = model(msi_bands)
+            pred_logits = model(image)
             loss = criterion(pred_logits, label)
 
             pred_probs = F.softmax(pred_logits, dim=1)
