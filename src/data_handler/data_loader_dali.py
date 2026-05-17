@@ -30,6 +30,7 @@ def segmentation_pipeline(
     shard_id: int = 0,
     num_shards: int = 1,
     random_shuffle: bool = True,
+    is_train: bool = True,
     img_height: int = 800,
     img_width: int = 800,
 ):
@@ -75,13 +76,14 @@ def segmentation_pipeline(
     # ---------------------------------------------------------
     # Optional augmentations
     # ---------------------------------------------------------
-    h_flip_coin = fn.random.coin_flip(probability=0.5)
-    images = fn.flip(images, horizontal=h_flip_coin)
-    labels = fn.flip(labels, horizontal=h_flip_coin)
+    if is_train:
+        h_flip_coin = fn.random.coin_flip(probability=0.5)
+        images = fn.flip(images, horizontal=h_flip_coin)
+        labels = fn.flip(labels, horizontal=h_flip_coin)
 
-    v_flip_coin = fn.random.coin_flip(probability=0.5)
-    images = fn.flip(images, vertical=v_flip_coin)
-    labels = fn.flip(labels, vertical=v_flip_coin)
+        v_flip_coin = fn.random.coin_flip(probability=0.5)
+        images = fn.flip(images, vertical=v_flip_coin)
+        labels = fn.flip(labels, vertical=v_flip_coin)
 
     # ---------------------------------------------------------
     # Normalize image
@@ -113,13 +115,15 @@ def build_dali_loader(
     batch_size: int = 8,
     num_threads: int = 4,
     device_id: int = 0,
+    is_train: bool = True,
     shuffle: bool = True,
 ) -> DALIGenericIterator:
     """
     DALI dataloader
     """
-    if isinstance(dir_tfrecord, str):
-        path_dir_tfrecord = Path(dir_tfrecord)
+    path_dir_tfrecord = (
+        Path(dir_tfrecord) if isinstance(dir_tfrecord, str) else dir_tfrecord
+    )
 
     list_tfrecord_files = sorted(
         [f for f in path_dir_tfrecord.glob("*tfrecord") if f.is_file()]
@@ -135,6 +139,7 @@ def build_dali_loader(
         num_threads=num_threads,
         device_id=device_id,
         random_shuffle=shuffle,
+        is_train=is_train,
     )
 
     pipe.build()
@@ -166,12 +171,14 @@ def get_dataloaders_for_training(
         batch_size=batch_size,
         num_threads=num_threads,
         device_id=device_id,
+        is_train=True,
     )
     test_loader = build_dali_loader(
         dir_test_tfrecords,
         batch_size=batch_size,
         num_threads=num_threads,
         device_id=device_id,
+        is_train=False,
         shuffle=False,
     )
 
