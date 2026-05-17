@@ -304,6 +304,7 @@ def train_sem_seg_pipeline(
     model_task: str
         the task for which the model is being trained (default: "semantic_segmentation")
     """
+    logging.info(f"Model: {model_name}, model compile method: {model_compile_mode}")
     path_dir_tmp_ckpt_model = Path(dir_tmp_ckpt_model)
     if not path_dir_tmp_ckpt_model.is_dir():
         path_dir_tmp_ckpt_model.mkdir()
