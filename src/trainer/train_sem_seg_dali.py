@@ -14,8 +14,8 @@ from torch import GradScaler
 from torch.optim import SGD, AdamW
 from typing import Union, Tuple, List
 from torch.nn import CrossEntropyLoss
-from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import PolynomialLR
+from nvidia.dali.plugin.pytorch import DALIGenericIterator
 
 
 from loss_func.focal_loss import FocalLoss
@@ -37,7 +37,7 @@ def train_nn(
         ResNet34UNet, ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus
     ],
     device: torch.device,
-    train_loader: DataLoader,
+    train_loader: DALIGenericIterator,
     criterion: Union[CrossEntropyLoss, FocalLoss],
     optimizer: Union[SGD, AdamW],
     amp_scaler: GradScaler,
@@ -53,7 +53,7 @@ def train_nn(
         model object
     device: torch.device
         indicates torch device
-    train_loader: DataLoader
+    train_loader: DALIGenericIterator
         train data loader object
     criterion: Union[CrossEntropyLoss, FocalLoss]
         criterion object for the loss function that needs to be used for training
@@ -79,8 +79,8 @@ def train_nn(
     metrics_calculator.reset_metrics()
 
     for batch in train_loader:
-        image = batch[0]["images"]  # .to(device, dtype=torch.float32)
-        label = batch[0]["labels"]  # .to(device, dtype=torch.long)
+        image = batch[0]["images"]
+        label = batch[0]["labels"]
 
         optimizer.zero_grad()
 
@@ -141,7 +141,7 @@ def test_nn(
         ResNet34UNet, ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus
     ],
     device: torch.device,
-    test_loader: DataLoader,
+    test_loader: DALIGenericIterator,
     criterion: CrossEntropyLoss,
     metrics_calculator: SemSegMetricsCalculator,
 ) -> Tuple[float, float, float, float, float, float, float, np.ndarray]:
@@ -155,7 +155,7 @@ def test_nn(
         model object
     device: torch.device
         indicates torch device
-    test_loader: DataLoader
+    test_loader: DALIGenericIterator
         test data loader object
     criterion: Union[CrossEntropyLoss, FocalLoss]
         criterion object for the loss function that needs to be used to compute loss for the test set
@@ -178,8 +178,8 @@ def test_nn(
 
     with torch.no_grad():
         for batch in test_loader:
-            image = batch[0]["images"]  # .to(device, dtype=torch.float32)
-            label = batch[0]["labels"]  # .to(device, dtype=torch.long)
+            image = batch[0]["images"]
+            label = batch[0]["labels"]
 
             pred_logits = model(image)
             loss = criterion(pred_logits, label)
