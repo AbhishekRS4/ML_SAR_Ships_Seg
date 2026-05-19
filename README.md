@@ -37,10 +37,11 @@
 * The torch.compile can be used for optimizing the model training that can effectively result in reduction in the training time
 * The following table shows the training time per epoch for the **ConvNextV2-Tiny-DeepLabV3+** model
 
-| Model compile method  | Avg. Time taken per epoch (in sec.) |
-| --------------------- | ----------------------------------- |
-| Reduce-overhead       |     520   |
-| Max-Autotune          |     480   |
+| Model compile method  | Batch Size | Data loading method | Avg. Time taken per epoch (in sec.) |
+| --------------------- | -----------| ------------------- | ----------------------------------- |
+| Reduce-overhead       |  12        | Torch DataLoader with PNG image loading  |   520   |
+| Max-Autotune          |   8        | Torch DataLoader with PNG image loading  |   480   |
+| Reduce-overhead       |  12        | Dali Pipeline with TFRecords | 530 |
 
 
 ## Model inference using AOT inductor
@@ -69,7 +70,7 @@
 * The dynamo frontend is used to compile the export program in both fp32 and mixed precisions for the **ConvNextV2-Tiny-DeepLabV3+** model. However, the mixed precision did not work since the inference results were all blank with mixed precision. Only fp32 worked with TensorRT
 * The following table shows the inference time with TensorRT optimization. It can be clearly observed that it did not give a significant improvement in the inference time
 
-| Model precision | Avg. inference time [other data samples] (milli sec.) |
+| Model precision | Avg. inference time (milli sec.) |
 | ------------ | ------------------------------------ |
 | float32 | 37.5 |
 
