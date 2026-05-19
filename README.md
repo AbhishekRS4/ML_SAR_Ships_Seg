@@ -2,7 +2,7 @@
 
 ## Info
 * The project is regarding the segmentation of ships in the processed images extracted from the Synthetic Aperture Radar (SAR) data
-* This project involves learning some new things like various model optimization strategies and using KServe for deployment of the ML model
+* This project involves learning some new things like various model optimization strategies, using TFRecords for dataset creation along with using Nvidia Dali for training and using KServe for deployment of the ML model
 
 
 ## Instructions to run code for data preparation
