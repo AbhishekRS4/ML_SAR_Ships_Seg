@@ -1,7 +1,7 @@
 import logging
 import argparse
 
-from trainer.train_sem_seg_dali import train_sem_seg_pipeline
+from trainer.train_sem_seg_dali_tfrecords import train_sem_seg_pipeline
 
 
 def parse_arguments() -> argparse.Namespace:
