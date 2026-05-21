@@ -1,5 +1,3 @@
-import os
-import torch
 import nvidia.dali.fn as fn
 import nvidia.dali.types as types
 import nvidia.dali.tfrecord as tfrecord
@@ -67,10 +65,8 @@ def tfrecords_segmentation_pipeline(
 
     labels = fn.decoders.image(
         inputs["label"],
-        device="mixed",
+        device="cpu",
         output_type=types.GRAY,
-        preallocate_height_hint=img_height,
-        preallocate_width_hint=img_width,
     )
 
     # ---------------------------------------------------------
@@ -88,20 +84,17 @@ def tfrecords_segmentation_pipeline(
     # ---------------------------------------------------------
     # Normalize image
     # ---------------------------------------------------------
-    images = fn.normalize(
+    images = fn.crop_mirror_normalize(
         images,
         dtype=types.FLOAT,
-        mean=0,
-        stddev=255,
+        output_layout="CHW",
+        mean=[0.0],
+        std=[255.0],
     )
 
-    # Label -> int64 tensor
+    # Label -> int64 tensor, HWC -> CHW, then squeeze channel dim
     labels = fn.cast(labels, dtype=types.INT64)
-
-    # HWC -> CHW
-    images = fn.transpose(images, perm=[2, 0, 1])
     labels = fn.transpose(labels, perm=[2, 0, 1])
-
     labels = fn.squeeze(labels, axes=0)
 
     return images, labels
@@ -126,11 +119,9 @@ def build_dali_tfrecords_loader(
     )
 
     list_tfrecord_files = sorted(
-        [f for f in path_dir_tfrecord.glob("*tfrecord") if f.is_file()]
+        [f for f in path_dir_tfrecord.glob("*.tfrecord") if f.is_file()]
     )
-    list_tfrecord_idx_files = sorted(
-        [f for f in path_dir_tfrecord.glob("*index") if f.is_file()]
-    )
+    list_tfrecord_idx_files = [f.with_suffix(".tfindex") for f in list_tfrecord_files]
 
     pipe = tfrecords_segmentation_pipeline(
         list_tfrecord_files,
@@ -151,6 +142,7 @@ def build_dali_tfrecords_loader(
         auto_reset=True,
         last_batch_policy=LastBatchPolicy.PARTIAL,
         prepare_first_batch=True,
+        dynamic_shape=False,
     )
 
     return data_loader
