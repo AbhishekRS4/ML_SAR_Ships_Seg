@@ -17,7 +17,7 @@ from torch.optim.lr_scheduler import PolynomialLR
 
 
 from loss_func.focal_loss import FocalLoss
-from data_handler.data_loader_dali import get_tfrecords_dataloaders
+from data_handler.data_loader_dali import get_png_dataloaders
 from trainer.train_common import train_nn_dali, test_nn_dali
 from models.sem_seg_model import (
     ResNet34UNet,
@@ -32,8 +32,10 @@ from metrics.compute_metrics import (
 
 
 def train_sem_seg_pipeline(
-    dir_train_tfrecords: str,
-    dir_test_tfrecords: str,
+    dir_train_images: str,
+    dir_train_labels: str,
+    dir_test_images: str,
+    dir_test_labels: str,
     dir_tmp_ckpt_model: str,
     batch_size: int,
     num_classes: int,
@@ -57,21 +59,25 @@ def train_sem_seg_pipeline(
     model_task: str = "semantic_segmentation",
 ) -> None:
     """
-    main model train pipeline for semantic segmentation task
+    main model train pipeline for semantic segmentation task using DALI PNG dataloader
 
     ---------
     Arguments
     ---------
-    dir_train_tfrecords: str
-        full path to the directory containing the train set tfrecord files
-    dir_test_tfrecords: str
-        full path to the directory containing the test set tfrecord files
+    dir_train_images: str
+        full path to the directory containing the train set images
+    dir_train_labels: str
+        full path to the directory containing the train set labels
+    dir_test_images: str
+        full path to the directory containing the test set images
+    dir_test_labels: str
+        full path to the directory containing the test set labels
     dir_tmp_ckpt_model: str
         full path to the directory where temporary model checkpoint file needs to be saved
     batch_size: int
         batch size to be used for training the model
     num_classes: int
-        number of classes in the dataset fo which the model needs to be trained
+        number of classes in the dataset for which the model needs to be trained
     labels_display_logs: List[str]
         the list of label names to be used for display in the confusion matrix figures
     class_weights: List[float]
@@ -87,7 +93,7 @@ def train_sem_seg_pipeline(
     optimizer_name: str
         optimizer to be used for training
     learning_rate: float
-        initial learning rate to be used for training (default:  1e-3)
+        initial learning rate to be used for training (default: 1e-3)
     weight_decay: float
         weight decay to be used for training (default: 1e-5)
     num_epochs: int
@@ -99,11 +105,11 @@ def train_sem_seg_pipeline(
     which_gpu: str
         the GPU number to be used for training the model (default: "0")
     num_threads: int
-        number of workers to be used in the dataloader (default: 8)
+        number of workers to be used in the dataloader (default: 4)
     num_in_channels: int
         number of input channels (default: 1)
     model_compile_mode: str
-        model compile model (default: "normal")
+        model compile mode (default: "normal")
     file_model_ckpt: Union[str, None]
         full path to intermediate model checkpoint that needs to be used in case of finetuning (default: None)
     model_task: str
@@ -122,10 +128,12 @@ def train_sem_seg_pipeline(
 
     os.environ["CUDA_VISIBLE_DEVICES"] = which_gpu
 
-    # create train and test data loaders
-    train_loader, test_loader = get_tfrecords_dataloaders(
-        dir_train_tfrecords,
-        dir_test_tfrecords,
+    # create train and test data loaders using DALI PNG pipeline
+    train_loader, test_loader = get_png_dataloaders(
+        dir_train_images,
+        dir_train_labels,
+        dir_test_images,
+        dir_test_labels,
         batch_size=batch_size,
         num_threads=num_threads,
     )
@@ -232,8 +240,10 @@ def train_sem_seg_pipeline(
 
         mlflow.log_param("dataset.num_in_channels", num_in_channels)
         mlflow.log_param("dataset.num_classes", num_classes)
-        mlflow.log_param("dataset.dir_train_tfrecords", dir_train_tfrecords)
-        mlflow.log_param("dataset.dir_test_tfrecords", dir_test_tfrecords)
+        mlflow.log_param("dataset.dir_train_images", dir_train_images)
+        mlflow.log_param("dataset.dir_train_labels", dir_train_labels)
+        mlflow.log_param("dataset.dir_test_images", dir_test_images)
+        mlflow.log_param("dataset.dir_test_labels", dir_test_labels)
         mlflow.log_param("dataset.batch_size", batch_size)
         mlflow.log_param("dataset.num_threads", num_threads)
         mlflow.log_param("dataset.class_label_mapping", labels_display_logs)
@@ -261,7 +271,6 @@ def train_sem_seg_pipeline(
                 amp_scaler,
                 metrics_calculator,
             )
-            # train_loader.reset()
             torch.cuda.empty_cache()
             (
                 test_loss,
@@ -279,7 +288,6 @@ def train_sem_seg_pipeline(
                 criterion,
                 metrics_calculator,
             )
-            # test_loader.reset()
             torch.cuda.empty_cache()
             time_end_epoch = time.time()
 
