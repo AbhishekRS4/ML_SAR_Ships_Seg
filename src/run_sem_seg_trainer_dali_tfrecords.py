@@ -162,7 +162,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--out-log-file",
-        default="hrsid_sem_seg_trainer_dali.log",
+        default="hrsid_sem_seg_trainer_dali_tfrecords.log",
         type=str,
         help="the log file where all the logs are recorded",
     )
