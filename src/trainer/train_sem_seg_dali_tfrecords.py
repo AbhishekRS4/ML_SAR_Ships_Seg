@@ -19,7 +19,7 @@ from nvidia.dali.plugin.pytorch import DALIGenericIterator
 
 
 from loss_func.focal_loss import FocalLoss
-from data_handler.data_loader_dali import get_dataloaders_for_training
+from data_handler.data_loader_dali import get_tfrecords_dataloaders
 from models.sem_seg_model import (
     ResNet34UNet,
     PSAResNet34UNet,
@@ -316,7 +316,7 @@ def train_sem_seg_pipeline(
     os.environ["CUDA_VISIBLE_DEVICES"] = which_gpu
 
     # create train and test data loaders
-    train_loader, test_loader = get_dataloaders_for_training(
+    train_loader, test_loader = get_tfrecords_dataloaders(
         dir_train_tfrecords,
         dir_test_tfrecords,
         batch_size=batch_size,
