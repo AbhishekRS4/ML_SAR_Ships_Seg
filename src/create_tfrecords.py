@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
     )
     arg_parser.add_argument(
         "--num-shards",
-        default=16,
+        default=8,
         type=int,
         help="num shards into which the tfrecord files need to be created",
     )
