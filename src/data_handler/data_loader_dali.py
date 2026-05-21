@@ -24,7 +24,7 @@ dali_backend.SetHostBufferShrinkThreshold(1.0)
     exec_async=True,
     prefetch_queue_depth=2,
 )
-def segmentation_pipeline(
+def tfrecords_segmentation_pipeline(
     list_tfrecord_files: List[PosixPath],
     list_tfrecord_idx_files: List[PosixPath],
     shard_id: int = 0,
@@ -110,7 +110,7 @@ def segmentation_pipeline(
 # ---------------------------------------------------------
 # Build DALI Loader
 # ---------------------------------------------------------
-def build_dali_loader(
+def build_dali_tfrecords_loader(
     dir_tfrecord: Union[str, PosixPath],
     batch_size: int = 8,
     num_threads: int = 4,
@@ -132,7 +132,7 @@ def build_dali_loader(
         [f for f in path_dir_tfrecord.glob("*index") if f.is_file()]
     )
 
-    pipe = segmentation_pipeline(
+    pipe = tfrecords_segmentation_pipeline(
         list_tfrecord_files,
         list_tfrecord_idx_files,
         batch_size=batch_size,
@@ -156,7 +156,7 @@ def build_dali_loader(
     return data_loader
 
 
-def get_dataloaders_for_training(
+def get_tfrecords_dataloaders(
     dir_train_tfrecords: Union[str, PosixPath],
     dir_test_tfrecords: Union[str, PosixPath],
     batch_size: int = 8,
@@ -166,14 +166,14 @@ def get_dataloaders_for_training(
     """
     get train and test dataloaders for training
     """
-    train_loader = build_dali_loader(
+    train_loader = build_dali_tfrecords_loader(
         dir_train_tfrecords,
         batch_size=batch_size,
         num_threads=num_threads,
         device_id=device_id,
         is_train=True,
     )
-    test_loader = build_dali_loader(
+    test_loader = build_dali_tfrecords_loader(
         dir_test_tfrecords,
         batch_size=batch_size,
         num_threads=num_threads,
