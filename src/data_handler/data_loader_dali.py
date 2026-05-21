@@ -61,6 +61,7 @@ def tfrecords_segmentation_pipeline(
         hw_decoder_load=0.90,
         preallocate_height_hint=img_height,
         preallocate_width_hint=img_width,
+        bytes_per_sample_hint=img_width * img_height,
     )
 
     labels = fn.decoders.image(
@@ -68,18 +69,17 @@ def tfrecords_segmentation_pipeline(
         device="cpu",
         output_type=types.GRAY,
     )
+    labels = labels.gpu()
 
     # ---------------------------------------------------------
     # Optional augmentations
     # ---------------------------------------------------------
     if is_train:
         h_flip_coin = fn.random.coin_flip(probability=0.5)
-        images = fn.flip(images, horizontal=h_flip_coin)
-        labels = fn.flip(labels, horizontal=h_flip_coin)
-
         v_flip_coin = fn.random.coin_flip(probability=0.5)
-        images = fn.flip(images, vertical=v_flip_coin)
-        labels = fn.flip(labels, vertical=v_flip_coin)
+
+        images = fn.flip(images, horizontal=h_flip_coin, vertical=v_flip_coin)
+        labels = fn.flip(labels, horizontal=h_flip_coin, vertical=v_flip_coin)
 
     # ---------------------------------------------------------
     # Normalize image
@@ -94,8 +94,7 @@ def tfrecords_segmentation_pipeline(
 
     # Label -> int64 tensor, HWC -> CHW, then squeeze channel dim
     labels = fn.cast(labels, dtype=types.INT64)
-    labels = fn.transpose(labels, perm=[2, 0, 1])
-    labels = fn.squeeze(labels, axes=0)
+    labels = fn.squeeze(labels, axes=2)
 
     return images, labels
 
