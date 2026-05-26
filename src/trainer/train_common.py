@@ -24,8 +24,10 @@ from metrics.compute_metrics import SemSegMetricsCalculator
 
 def train_nn_dali(
     model: Union[
-        ResNet34UNet, PSAResNet34UNet,
-        ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus,
+        ResNet34UNet,
+        PSAResNet34UNet,
+        ConvNextV2TinyDeepLabV3Plus,
+        ConvNextV2BaseDeepLabV3Plus,
     ],
     device: torch.device,
     train_loader: DALIGenericIterator,
@@ -129,8 +131,10 @@ def train_nn_dali(
 
 def test_nn_dali(
     model: Union[
-        ResNet34UNet, PSAResNet34UNet,
-        ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus,
+        ResNet34UNet,
+        PSAResNet34UNet,
+        ConvNextV2TinyDeepLabV3Plus,
+        ConvNextV2BaseDeepLabV3Plus,
     ],
     device: torch.device,
     test_loader: DALIGenericIterator,
@@ -218,8 +222,10 @@ def test_nn_dali(
 
 def train_nn(
     model: Union[
-        ResNet34UNet, PSAResNet34UNet,
-        ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus,
+        ResNet34UNet,
+        PSAResNet34UNet,
+        ConvNextV2TinyDeepLabV3Plus,
+        ConvNextV2BaseDeepLabV3Plus,
     ],
     device: torch.device,
     train_loader: DataLoader,
@@ -321,8 +327,10 @@ def train_nn(
 
 def test_nn(
     model: Union[
-        ResNet34UNet, PSAResNet34UNet,
-        ConvNextV2TinyDeepLabV3Plus, ConvNextV2BaseDeepLabV3Plus,
+        ResNet34UNet,
+        PSAResNet34UNet,
+        ConvNextV2TinyDeepLabV3Plus,
+        ConvNextV2BaseDeepLabV3Plus,
     ],
     device: torch.device,
     test_loader: DataLoader,
