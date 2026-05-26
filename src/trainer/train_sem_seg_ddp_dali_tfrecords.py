@@ -53,7 +53,6 @@ def setup_ddp(rank: int, world_size: int) -> None:
         world_size=world_size,
     )
     torch.cuda.set_device(rank)
-    return
 
 
 def cleanup_ddp() -> None:
@@ -61,7 +60,6 @@ def cleanup_ddp() -> None:
     destroy the distributed process group
     """
     dist.destroy_process_group()
-    return
 
 
 def reduce_tensor(tensor: torch.Tensor, world_size: int) -> torch.Tensor:
