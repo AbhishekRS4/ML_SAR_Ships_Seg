@@ -20,7 +20,7 @@ dali_backend.SetHostBufferShrinkThreshold(1.0)
     enable_conditionals=False,
     exec_pipelined=True,
     exec_async=True,
-    prefetch_queue_depth=2,
+    prefetch_queue_depth=1,
 )
 def tfrecords_segmentation_pipeline(
     list_tfrecord_files: List[PosixPath],
@@ -75,6 +75,26 @@ def tfrecords_segmentation_pipeline(
     labels = labels.gpu()
 
     # ---------------------------------------------------------
+    # Resize image and label
+    # ---------------------------------------------------------
+    images = fn.resize(
+        images,
+        resize_x=img_width,
+        resize_y=img_height,
+        interp_type=types.INTERP_LINEAR,
+        antialias=False,
+        bytes_per_sample_hint=img_width * img_height,
+    )
+
+    labels = fn.resize(
+        labels,
+        resize_x=img_width,
+        resize_y=img_height,
+        interp_type=types.INTERP_NN,
+        antialias=False,
+    )
+
+    # ---------------------------------------------------------
     # Optional augmentations
     # ---------------------------------------------------------
     if is_train:
@@ -112,9 +132,31 @@ def build_dali_tfrecords_loader(
     device_id: int = 0,
     is_train: bool = True,
     shuffle: bool = True,
+    shard_id: int = 0,
+    num_shards: int = 1,
 ) -> DALIGenericIterator:
     """
     DALI TFRecords dataloader
+
+    ---------
+    Arguments
+    ---------
+    dir_tfrecord: Union[str, PosixPath]
+        full path to the directory containing the tfrecord files
+    batch_size: int
+        batch size (default: 8)
+    num_threads: int
+        number of threads for the DALI pipeline (default: 4)
+    device_id: int
+        GPU device id (default: 0)
+    is_train: bool
+        whether this is a training loader (default: True)
+    shuffle: bool
+        whether to shuffle the data (default: True)
+    shard_id: int
+        shard id for distributed training (default: 0)
+    num_shards: int
+        total number of shards for distributed training (default: 1)
     """
     path_dir_tfrecord = (
         Path(dir_tfrecord) if isinstance(dir_tfrecord, str) else dir_tfrecord
@@ -133,6 +175,8 @@ def build_dali_tfrecords_loader(
         device_id=device_id,
         random_shuffle=shuffle,
         is_train=is_train,
+        shard_id=shard_id,
+        num_shards=num_shards,
     )
 
     pipe.build()
