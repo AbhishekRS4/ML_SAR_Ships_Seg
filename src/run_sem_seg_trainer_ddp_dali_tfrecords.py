@@ -1,0 +1,254 @@
+import logging
+import argparse
+import torch
+import torch.multiprocessing as mp
+
+from functools import partial
+from trainer.train_sem_seg_ddp_dali_tfrecords import train_sem_seg_ddp_pipeline
+
+
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="DDP training for semantic segmentation using DALI TFRecords",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--dir-train-tfrecords",
+        default="HRSID/train_tfrecords",
+        type=str,
+        help="full path to the directory with the train set tfrecords",
+    )
+    parser.add_argument(
+        "--dir-test-tfrecords",
+        default="HRSID/test_tfrecords",
+        type=str,
+        help="full path to the directory with the test set tfrecords",
+    )
+    parser.add_argument(
+        "--dir-tmp-ckpt-model",
+        default="tmp_ckpt_model",
+        type=str,
+        help="full path to the directory where model checkpoint files need to be stored temporarily that will be logged to MLflow tracking server",
+    )
+    parser.add_argument(
+        "--batch-size",
+        default=8,
+        type=int,
+        help="batch size per GPU to be used for training",
+    )
+    parser.add_argument(
+        "--num-classes",
+        default=2,
+        type=int,
+        help="number of target classes in the dataset",
+    )
+    parser.add_argument(
+        "--labels-display-logs",
+        nargs="*",
+        default=[
+            "background",
+            "ship",
+        ],
+        help="the list of labels for every class label that needs to be used for logging",
+    )
+    parser.add_argument(
+        "--class-weights",
+        nargs="*",
+        default=[
+            0.50160638,
+            156.12963969,
+        ],
+        type=float,
+        help="class weights to be applied in the loss function during training",
+    )
+    parser.add_argument(
+        "--experiment-name",
+        default="HRSID_SAR",
+        type=str,
+        help="the experiment name in MLFlow",
+    )
+    parser.add_argument(
+        "--run-name",
+        default="HRSID_SAR_DDP",
+        type=str,
+        help="the run name in MLFlow",
+    )
+    parser.add_argument(
+        "--model-name",
+        default="convnext_v2_tiny_deeplab_v3+",
+        choices=[
+            "convnext_v2_tiny_deeplab_v3+",
+            "convnext_v2_base_deeplab_v3+",
+            "resnet34_unet",
+            "psa_resnet34_unet",
+        ],
+        type=str,
+        help="the model that needs to be trained",
+    )
+    parser.add_argument(
+        "--loss-fn",
+        default="focal",
+        choices=[
+            "cross_entropy",
+            "focal",
+        ],
+        type=str,
+        help="the loss function to be used for training the model",
+    )
+    parser.add_argument(
+        "--optimizer-name",
+        default="adamw",
+        choices=["adamw", "sgd"],
+        type=str,
+        help="the optimizer to be used for training the model",
+    )
+    parser.add_argument(
+        "--learning-rate",
+        default=1e-3,
+        type=float,
+        help="initial learning rate to be used for training",
+    )
+    parser.add_argument(
+        "--weight-decay",
+        default=5e-5,
+        type=float,
+        help="weight decay",
+    )
+    parser.add_argument(
+        "--num-epochs",
+        default=200,
+        type=int,
+        help="number of epochs for which the model needs to be trained",
+    )
+    parser.add_argument(
+        "--checkpoint-freq",
+        default=2,
+        type=int,
+        help="checkpoint epoch frequency for which the model needs to be logged",
+    )
+    parser.add_argument(
+        "--checkpoint-skip",
+        default=10,
+        type=int,
+        help="checkpoint epoch skip is the first few epochs for which the model need not be logged",
+    )
+    parser.add_argument(
+        "--num-gpus",
+        default=2,
+        type=int,
+        help="number of GPUs to use for DDP training (default: all available GPUs)",
+    )
+    parser.add_argument(
+        "--num-threads",
+        default=4,
+        type=int,
+        help="num threads to be used in the DALI dataloaders per GPU",
+    )
+    parser.add_argument(
+        "--num-in-channels",
+        default=1,
+        type=int,
+        help="num input channels to the model",
+    )
+    parser.add_argument(
+        "--model-compile-mode",
+        default="max-autotune",
+        type=str,
+        choices=["reduce-overhead", "max-autotune", "uncompiled"],
+        help="indicates the model compile option to use to reduce overhead during training",
+    )
+    parser.add_argument(
+        "--file-model-ckpt",
+        default=None,
+        type=str,
+        help="full path to the checkpoint file to load for finetuning the model",
+    )
+    parser.add_argument(
+        "--master-addr",
+        default="localhost",
+        type=str,
+        help="master address for DDP",
+    )
+    parser.add_argument(
+        "--master-port",
+        default="12355",
+        type=str,
+        help="master port for DDP",
+    )
+    parser.add_argument(
+        "--out-log-file",
+        default="hrsid_sem_seg_trainer_ddp_dali_tfrecords.log",
+        type=str,
+        help="the log file where all the logs are recorded",
+    )
+
+    ARGS, unparsed = parser.parse_known_args()
+    return ARGS
+
+
+def main() -> None:
+    ARGS = parse_arguments()
+
+    logging.basicConfig(
+        filename=ARGS.out_log_file,
+        filemode="a",
+        format="%(asctime)s,%(msecs)03d %(name)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.INFO,
+    )
+
+    # set environment variables for DDP
+    import os
+
+    os.environ["MASTER_ADDR"] = ARGS.master_addr
+    os.environ["MASTER_PORT"] = ARGS.master_port
+
+    # determine the number of GPUs
+    if ARGS.num_gpus is not None:
+        world_size = ARGS.num_gpus
+    else:
+        world_size = torch.cuda.device_count()
+
+    if world_size < 1:
+        logging.error("No GPUs available for DDP training")
+        return
+
+    logging.info(f"Starting DDP training with {world_size} GPU(s)")
+
+    # use partial to pass all arguments to the worker function
+    worker_fn = partial(
+        train_sem_seg_ddp_pipeline,
+        world_size=world_size,
+        dir_train_tfrecords=ARGS.dir_train_tfrecords,
+        dir_test_tfrecords=ARGS.dir_test_tfrecords,
+        dir_tmp_ckpt_model=ARGS.dir_tmp_ckpt_model,
+        batch_size=ARGS.batch_size,
+        num_classes=ARGS.num_classes,
+        labels_display_logs=ARGS.labels_display_logs,
+        class_weights=ARGS.class_weights,
+        experiment_name=ARGS.experiment_name,
+        run_name=ARGS.run_name,
+        model_name=ARGS.model_name,
+        loss_fn=ARGS.loss_fn,
+        optimizer_name=ARGS.optimizer_name,
+        learning_rate=ARGS.learning_rate,
+        weight_decay=ARGS.weight_decay,
+        num_epochs=ARGS.num_epochs,
+        checkpoint_freq=ARGS.checkpoint_freq,
+        checkpoint_skip=ARGS.checkpoint_skip,
+        num_threads=ARGS.num_threads,
+        num_in_channels=ARGS.num_in_channels,
+        model_compile_mode=ARGS.model_compile_mode,
+        file_model_ckpt=ARGS.file_model_ckpt,
+    )
+
+    # spawn processes for DDP training
+    mp.spawn(worker_fn, nprocs=world_size, join=True)
+
+    logging.info("DDP training completed")
+    return
+
+
+if __name__ == "__main__":
+    main()
