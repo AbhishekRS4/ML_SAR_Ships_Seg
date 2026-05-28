@@ -37,32 +37,53 @@ class SemSegMetricsCalculator:
         self.average = average
         self.num_classes = num_classes
 
-        self.accuracy_score = Accuracy(task=self.task, num_classes=self.num_classes).to(
-            self.device
-        )
+        self.accuracy_score = Accuracy(
+            task=self.task,
+            num_classes=self.num_classes,
+            dist_sync_on_step=False,
+            sync_on_compute=True,
+        ).to(self.device)
         self.f1_score = F1Score(
-            task=self.task, num_classes=self.num_classes, average=self.average
+            task=self.task,
+            num_classes=self.num_classes,
+            average=self.average,
+            dist_sync_on_step=False,
+            sync_on_compute=True,
         ).to(self.device)
         self.precision_score = Precision(
-            task=self.task, num_classes=self.num_classes, average=self.average
+            task=self.task,
+            num_classes=self.num_classes,
+            average=self.average,
+            dist_sync_on_step=False,
+            sync_on_compute=True,
         ).to(self.device)
         self.recall_score = Recall(
-            task=self.task, num_classes=self.num_classes, average=self.average
+            task=self.task,
+            num_classes=self.num_classes,
+            average=self.average,
+            dist_sync_on_step=False,
+            sync_on_compute=True,
         ).to(self.device)
         self.conf_matrix = ConfusionMatrix(
             task=self.task,
             num_classes=self.num_classes,
             normalize="true",
+            dist_sync_on_step=False,
+            sync_on_compute=True,
         ).to(self.device)
         self.mean_iou = MeanIoU(
             num_classes=num_classes,
             input_format="index",
+            dist_sync_on_step=False,
+            sync_on_compute=True,
         ).to(self.device)
         self.dice_score = DiceScore(
             num_classes=num_classes,
             average=average,
             input_format="index",
             aggregation_level="global",
+            dist_sync_on_step=False,
+            sync_on_compute=True,
         ).to(self.device)
 
     def update_metrics(
