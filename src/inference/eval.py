@@ -89,6 +89,9 @@ def eval_pipeline(
     model.to(device)
     model.eval()
 
+    logging.info(f"Model: {model_name}, file checkpoint: {file_model_ckpt}")
+    logging.info(f"Loading images from: {dir_test_images}")
+
     list_test_images = sorted(
         [f for f in path_dir_test_images.glob("*png") if f.is_file()]
     )
