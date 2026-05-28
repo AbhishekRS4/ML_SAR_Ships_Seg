@@ -477,6 +477,7 @@ def train_sem_seg_ddp_pipeline(
         mlflow.log_param("dataset.num_threads", num_threads)
         mlflow.log_param("dataset.class_label_mapping", labels_display_logs)
 
+        mlflow.log_param("model.model_name", model_name)
         mlflow.log_param("model.model_compile_mode", model_compile_mode)
         mlflow.log_param("distributed.world_size", ddp_context.world_size)
         mlflow.log_param("distributed.backend", "nccl")

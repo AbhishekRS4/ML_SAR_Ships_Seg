@@ -267,6 +267,7 @@ def train_sem_seg_pipeline(
         mlflow.log_text("\n".join(list_test_images), "dataset_list_test_images.txt")
 
         mlflow.log_param("model.task", model_task)
+        mlflow.log_param("model.model_name", model_name)
         mlflow.log_param("model.model_compile_mode", model_compile_mode)
 
         for epoch in range(1, num_epochs + 1):
