@@ -1,9 +1,9 @@
+import os
+import torch
 import logging
 import argparse
-import torch
-import torch.multiprocessing as mp
 
-from functools import partial
+
 from trainer.train_sem_seg_ddp_dali_tfrecords import train_sem_seg_ddp_pipeline
 
 
@@ -51,16 +51,6 @@ def parse_arguments() -> argparse.Namespace:
             "ship",
         ],
         help="the list of labels for every class label that needs to be used for logging",
-    )
-    parser.add_argument(
-        "--class-weights",
-        nargs="*",
-        default=[
-            0.50160638,
-            156.12963969,
-        ],
-        type=float,
-        help="class weights to be applied in the loss function during training",
     )
     parser.add_argument(
         "--experiment-name",
@@ -134,12 +124,6 @@ def parse_arguments() -> argparse.Namespace:
         help="checkpoint epoch skip is the first few epochs for which the model need not be logged",
     )
     parser.add_argument(
-        "--num-gpus",
-        default=2,
-        type=int,
-        help="number of GPUs to use for DDP training (default: all available GPUs)",
-    )
-    parser.add_argument(
         "--num-threads",
         default=4,
         type=int,
@@ -165,18 +149,6 @@ def parse_arguments() -> argparse.Namespace:
         help="full path to the checkpoint file to load for finetuning the model",
     )
     parser.add_argument(
-        "--master-addr",
-        default="localhost",
-        type=str,
-        help="master address for DDP",
-    )
-    parser.add_argument(
-        "--master-port",
-        default="12355",
-        type=str,
-        help="master port for DDP",
-    )
-    parser.add_argument(
         "--out-log-file",
         default="hrsid_sem_seg_trainer_ddp_dali_tfrecords.log",
         type=str,
@@ -198,35 +170,16 @@ def main() -> None:
         level=logging.INFO,
     )
 
-    # set environment variables for DDP
-    import os
-
-    os.environ["MASTER_ADDR"] = ARGS.master_addr
-    os.environ["MASTER_PORT"] = ARGS.master_port
-
-    # determine the number of GPUs
-    if ARGS.num_gpus is not None:
-        world_size = ARGS.num_gpus
-    else:
-        world_size = torch.cuda.device_count()
-
-    if world_size < 1:
-        logging.error("No GPUs available for DDP training")
-        return
+    world_size = int(os.environ["WORLD_SIZE"])
 
     logging.info(f"Starting DDP training with {world_size} GPU(s)")
-
-    # use partial to pass all arguments to the worker function
-    worker_fn = partial(
-        train_sem_seg_ddp_pipeline,
-        world_size=world_size,
-        dir_train_tfrecords=ARGS.dir_train_tfrecords,
-        dir_test_tfrecords=ARGS.dir_test_tfrecords,
-        dir_tmp_ckpt_model=ARGS.dir_tmp_ckpt_model,
+    train_sem_seg_ddp_pipeline(
+        ARGS.dir_train_tfrecords,
+        ARGS.dir_test_tfrecords,
+        ARGS.dir_tmp_ckpt_model,
         batch_size=ARGS.batch_size,
         num_classes=ARGS.num_classes,
         labels_display_logs=ARGS.labels_display_logs,
-        class_weights=ARGS.class_weights,
         experiment_name=ARGS.experiment_name,
         run_name=ARGS.run_name,
         model_name=ARGS.model_name,
@@ -241,11 +194,8 @@ def main() -> None:
         num_in_channels=ARGS.num_in_channels,
         model_compile_mode=ARGS.model_compile_mode,
         file_model_ckpt=ARGS.file_model_ckpt,
+        out_log_file=ARGS.out_log_file,
     )
-
-    # spawn processes for DDP training
-    mp.spawn(worker_fn, nprocs=world_size, join=True)
-
     logging.info("DDP training completed")
     return
 
