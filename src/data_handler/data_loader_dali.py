@@ -14,7 +14,7 @@ dali_backend.SetHostBufferShrinkThreshold(1.0)
 
 
 # ---------------------------------------------------------
-# DALI Pipeline
+# DALI Pipeline for TFRecords
 # ---------------------------------------------------------
 @pipeline_def(
     enable_conditionals=False,
@@ -47,7 +47,7 @@ def tfrecords_segmentation_pipeline(
         random_shuffle=random_shuffle,
         shard_id=shard_id,
         num_shards=num_shards,
-        pad_last_batch=True,
+        pad_last_batch=False,
         prefetch_queue_depth=2,
         lazy_init=False,
         initial_fill=4096,
@@ -123,7 +123,7 @@ def tfrecords_segmentation_pipeline(
 
 
 # ---------------------------------------------------------
-# Build DALI Loader
+# Build DALI TFRecords DataLoader
 # ---------------------------------------------------------
 def build_dali_tfrecords_loader(
     dir_tfrecord: Union[str, PosixPath],
@@ -186,7 +186,7 @@ def build_dali_tfrecords_loader(
         output_map=["images", "labels"],
         reader_name="TFRecordReader",
         auto_reset=True,
-        last_batch_policy=LastBatchPolicy.PARTIAL,
+        last_batch_policy=LastBatchPolicy.DROP,
         prepare_first_batch=True,
         dynamic_shape=False,
     )
@@ -223,6 +223,9 @@ def get_tfrecords_dataloaders(
     return train_loader, test_loader
 
 
+# ---------------------------------------------------------
+# DALI Pipeline for PNG Images
+# ---------------------------------------------------------
 @pipeline_def(
     enable_conditionals=False,
     exec_pipelined=True,
@@ -313,7 +316,7 @@ def png_segmentation_pipeline(
 
 
 # ---------------------------------------------------------
-# Build DALI Loader
+# Build DALI PNG DataLoader
 # ---------------------------------------------------------
 def build_dali_png_loader(
     dir_images: Union[str, PosixPath],
@@ -323,9 +326,33 @@ def build_dali_png_loader(
     device_id: int = 0,
     is_train: bool = True,
     shuffle: bool = True,
+    shard_id: int = 0,
+    num_shards: int = 1,
 ) -> DALIGenericIterator:
     """
     DALI PNG dataloader
+
+    ---------
+    Arguments
+    ---------
+    dir_images: Union[str, PosixPath]
+        full path to the directory containing the PNG image files
+    dir_labels: Union[str, PosixPath]
+        full path to the directory containing the PNG label files
+    batch_size: int
+        batch size (default: 8)
+    num_threads: int
+        number of threads for the DALI pipeline (default: 4)
+    device_id: int
+        GPU device id (default: 0)
+    is_train: bool
+        whether this is a training loader (default: True)
+    shuffle: bool
+        whether to shuffle the data (default: True)
+    shard_id: int
+        shard id for distributed training (default: 0)
+    num_shards: int
+        total number of shards for distributed training (default: 1)
     """
     path_dir_images = Path(dir_images) if isinstance(dir_images, str) else dir_images
     path_dir_labels = Path(dir_labels) if isinstance(dir_labels, str) else dir_labels
@@ -344,6 +371,8 @@ def build_dali_png_loader(
         device_id=device_id,
         random_shuffle=shuffle,
         is_train=is_train,
+        shard_id=shard_id,
+        num_shards=num_shards,
     )
 
     pipe.build()
