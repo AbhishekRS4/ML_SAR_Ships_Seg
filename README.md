@@ -2,7 +2,7 @@
 
 ## Info
 * The project is regarding the segmentation of ships in the processed images extracted from the Synthetic Aperture Radar (SAR) data
-* This project involves learning some new things like various model optimization strategies, using TFRecords for dataset creation along with using Nvidia Dali for training and using KServe for deployment of the ML model
+* This project involves learning some advanced concepts like various model training and inference optimization strategies, using TFRecords for dataset creation, training using Nvidia Dali Pipelines, DDP training using torchrun.
 
 
 ## Instructions to run code for data preparation
@@ -10,15 +10,22 @@
 * Run [src/create_pure_bg_label_images.py](src/create_pure_bg_label_images.py) to generate pure background label images
 * Run [src/move_ship_images_for_training.py](src/move_ship_images_for_training.py) to move the ship images to train and test set directories to be used for training
 * Run [src/move_pure_bg_data_for_training.py](src/move_pure_bg_data_for_training.py) to move the pure background images and labels to train and test set directories to be used for training
+* Run [src/create_tfrecords.py](src/create_tfrecords.py) to create TFRecords dataset files
 
 
 ## Instructions to optimize model checkpoints for inference
-* Run [src/optimize_model_ckpt_with_aot_inductor.py](src/optimize_model_ckpt_with_aot_inductor.py) to optimize the model checkpoint with AOT Inductor compilation. This is mainly useful to reduce the inference cold start latence i.e. to reduce the time for the first inference
+* Run [src/optimize_model_with_aot_inductor.py](src/optimize_model_with_aot_inductor.py) to optimize the model checkpoint with AOT Inductor compilation. This is mainly useful to reduce the inference cold start latence i.e. to reduce the time for the first inference
+* Run [src/optimize_model_with_onnx.py](src/optimize_model_with_onnx.py) to optimize the model checkpoint with ONNX.
+* Run [src/optimize_model_with_tensorrt.py](src/optimize_model_with_tensorrt.py) to optimize the model checkpoint with TensorRT.
 
 
-## Instructions to run code for semantic segmentation task
-* Run [src/run_sem_seg_trainer.py](src/run_sem_seg_trainer.py) to run training experiments for the semantic segmentation task
-* Run [src/run_sem_seg_inference.py](src/run_sem_seg_inference.py) to run inference for the semantic segmentation task
+## Instructions to run code for ship segmentation
+* Run [src/run_sem_seg_trainer.py](src/run_sem_seg_trainer.py) to run training experiments for PNG
+* Run [src/run_sem_seg_trainer_dali_png.py](src/run_sem_seg_trainer_dali_png.py) to run training experiments with Dali pipeline for PNG
+* Run [src/run_sem_seg_trainer_dali_tfrecords.py](src/run_sem_seg_trainer_dali_tfrecords.py) to run training experiments with Dali pipeline for TFRecords
+* Run [src/run_sem_seg_trainer_ddp_dali_tfrecords.py](src/run_sem_seg_trainer_ddp_dali_tfrecords.py) to run DDP multi-gpu training experiments with Dali pipeline for TFRecords
+* Run [src/run_sem_seg_inference_torch.py](src/run_sem_seg_inference_torch.py) to run inference
+* Run [src/run_sem_seg_eval.py](src/run_sem_seg_eval.py) to run evaluation
 * Run [src/generate_sem_seg_inference_vis.py](src/generate_sem_seg_inference_vis.py) to generate visualizations of the predictions
 
 
@@ -37,15 +44,24 @@
 * The torch.compile can be used for optimizing the model training that can effectively result in reduction in the training time
 * The following table shows the training time per epoch for the **ConvNextV2-Tiny-DeepLabV3+** model
 
-| Model compile method  | Batch Size | Data loading method | Avg. Time taken per epoch (in sec.) |
-| --------------------- | -----------| ------------------- | ----------------------------------- |
-| Reduce-overhead       |  12        | Torch DataLoader with PNG image loading  |   520   |
-| Max-Autotune          |   8        | Torch DataLoader with PNG image loading  |   480   |
-| Reduce-overhead       |  12        | Dali Pipeline with TFRecords | 530 |
+| Model training + compile method | Batch Size (per GPU) | Data loading method | Avg. time per epoch (in sec.) |
+| --------------------------------| -----------| ------------------- | ----------------------------- |
+| Single GPU with Reduce-overhead |  12        | Torch DataLoader with PNG image loading  |   520   |
+| Single GPU with Max-Autotune    |   8        | Torch DataLoader with PNG image loading  |   480   |
+| Single GPU with Reduce-overhead |  8        | Dali Pipeline with TFRecords             |    440   |
+| Single GPU with Reduce-overhead |  8        | Dali Pipeline with PNG                   |    485   |
+| DDP + Multi GPUs (2) with Reduce-overhead |  8  | Dali Pipeline with TFRecords |   220   |
+
+
+## DDP model training on a single node with multiple GPUs
+* The following method is recommended for DDP training even on single node with multiple GPUs (denoted by `nproc_per_node` param in the `torchrun` cmd)
+```
+torchrun --standalone --nproc_per_node=2 ML_SAR_Ships/src/run_sem_seg_trainer_ddp_dali_tfrecords.py --num-epochs 10 --learning-rate 3e-5 ...
+```
 
 
 ## Model inference using AOT inductor
-* The AOT inductor model compilation can result in the reduction in the initial inference start time i.e. the inference cold start can be reduced significantly
+* The AOT inductor model compilation can result in the reduction in the initial inference start time i.e. the inference cold start can be reduced significantly. The inference time without preprocessing and data transfer
 * The following table shows the starting inference time speedup with AOT inductor model compilation for the **ConvNextV2-Tiny-DeepLabV3+** model. It can be clearly observed that AOT inductor compiled model reduced the starting inference time by a significant amount
 
 | Model method | Starting [first, second data samples] inference time (milli sec.) | Avg. inference time [other data samples] (milli sec.) |
@@ -65,8 +81,9 @@
 
 
 ## Model inference using TensorRT
-* The TensorRT model optimization is used to benchmark the inference time on the same GPU
+* The TensorRT model optimization is used to benchmark the inference time on the same GPU. The inference time without preprocessing and data transfer
 * For performing any experiments with TensorRT, use the following docker image - `nvcr.io/nvidia/pytorch:25.11-py3`
+* Refer [docker_cmds/README.md](docker_cmds/README.md) for instructions to run TensorRT experiments
 * The dynamo frontend is used to compile the export program in both fp32 and mixed precisions for the **ConvNextV2-Tiny-DeepLabV3+** model. However, the mixed precision did not work since the inference results were all blank with mixed precision. Only fp32 worked with TensorRT
 * The following table shows the inference time with TensorRT optimization. It can be clearly observed that it did not give a significant improvement in the inference time
 
@@ -86,13 +103,13 @@
 
 
 ## Model performance quantitative metrics
-* The following table shows the quantitative metrics of the ConvNextV2-Tiny-DeepLabV3+ model performance
+* The following table shows the quantitative metrics of the ConvNextV2-Tiny-DeepLabV3+ model performance without using class weights in the Focal loss function. The models have not been trained well enough to optimize for performance rather than for learning new skills.
 
 | Model name | Train mIoU | Train Dice | Test mIoU | Test Dice |
 | ---------- | ---------- | ---------- | --------- | --------- |
-| ConvNextV2-Tiny-DeepLabV3+ | 0.7444 | 0.9968 | 0.7448 | 0.9959 |
-| ResNet34-UNet              | 0.7808 | 0.9976 | 0.7868 | 0.9971 |
-| PSAResNet34-UNet           | 0.7571 | 0.9965 | 0.7683 | 0.9962 |
+| ConvNextV2-Tiny-DeepLabV3+ | 0.8116 | 0.9978 | 0.8086 | 0.9970 |
+| ResNet34-UNet              | 0.8959 | 0.9990 | 0.8867 | 0.9983 |
+| PSAResNet34-UNet           | 0.8776 | 0.9986 | 0.8725 | 0.9977 |
 
 
 ## Model performance qualitative visualization results - sample test set predictions
@@ -104,7 +121,7 @@
 ![Sample predicted mask 5](images/ConvNextV2-Tiny-DeepLabV3+/P0063_1200_2000_7800_8600.png?raw=true)
 ![Sample predicted mask 6](images/ConvNextV2-Tiny-DeepLabV3+/P0082_3000_3800_600_1400.png?raw=true)
 ![Sample predicted mask 7](images/ConvNextV2-Tiny-DeepLabV3+/P0083_1800_2600_1800_2600.png?raw=true)
-* The following visualization show the results of different inference methods to show that the inference predictions are consistent across different methods using ConvNextV2-Tiny-DeepLabV3+ model
+* The following visualization show the results of different inference methods to show that the inference predictions are consistent across different inference methods using ConvNextV2-Tiny-DeepLabV3+ model
 ![Sample predicted mask 8](images/ConvNextV2-Tiny-DeepLabV3+/inference_results_comparison.png?raw=true)
 * The following seven visualizations show the qualitative results of the ResNet34-UNet model performance
 ![Sample predicted mask 1](images/ResNet34-UNet/P0001_2400_3200_4800_5600.png?raw=true)
