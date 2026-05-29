@@ -12,7 +12,7 @@ dev-inference-onnx = [
     "onnxruntime-gpu==1.23.2",
     "onnxscript==0.5.7",
 ]
-dev-train = [
+dev-train-torch = [
     "mlflow==2.20.4",
     "numpy==2.2.6",
     "pillow==11.1.0",

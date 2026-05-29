@@ -4,11 +4,11 @@ requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and sys_platform != 'win32'",
+    "python_full_version == '3.11.*' and sys_platform != 'win32'",
+    "python_full_version < '3.11' and sys_platform != 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'win32'",
-    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version == '3.11.*' and sys_platform == 'win32'",
-    "python_full_version < '3.11' and sys_platform != 'win32'",
     "python_full_version < '3.11' and sys_platform == 'win32'",
 ]
 
@@ -406,9 +406,9 @@ source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and sys_platform != 'win32'",
+    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'win32'",
-    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version == '3.11.*' and sys_platform == 'win32'",
 ]
 dependencies = [
@@ -1519,7 +1519,10 @@ dev-inference-onnx = [
     { name = "onnxruntime-gpu" },
     { name = "onnxscript" },
 ]
-dev-train = [
+dev-train-dali = [
+    { name = "nvidia-dali-cuda120" },
+]
+dev-train-torch = [
     { name = "mlflow" },
     { name = "numpy" },
     { name = "pillow" },
@@ -1531,9 +1534,6 @@ dev-train = [
     { name = "torchmetrics" },
     { name = "torchvision" },
 ]
-dev-train-dali = [
-    { name = "nvidia-dali-cuda120" },
-]
 
 [package.metadata]
 
@@ -1543,7 +1543,8 @@ dev-inference-onnx = [
     { name = "onnxruntime-gpu", specifier = "==1.23.2" },
     { name = "onnxscript", specifier = "==0.5.7" },
 ]
-dev-train = [
+dev-train-dali = [{ name = "nvidia-dali-cuda120", specifier = "==2.1.0" }]
+dev-train-torch = [
     { name = "mlflow", specifier = "==2.20.4" },
     { name = "numpy", specifier = "==2.2.6" },
     { name = "pillow", specifier = "==11.1.0" },
@@ -1555,7 +1556,6 @@ dev-train = [
     { name = "torchmetrics", specifier = "==1.8.2" },
     { name = "torchvision", specifier = "==0.21.0" },
 ]
-dev-train-dali = [{ name = "nvidia-dali-cuda120", specifier = "==2.1.0" }]
 
 [[package]]
 name = "mlflow"
@@ -1641,9 +1641,9 @@ source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and sys_platform != 'win32'",
+    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'win32'",
-    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version == '3.11.*' and sys_platform == 'win32'",
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/6a/51/63fe664f3908c97be9d2e4f1158eb633317598cfa6e1fc14af5383f17512/networkx-3.6.1.tar.gz", hash = "sha256:26b7c357accc0c8cde558ad486283728b65b6a95d85ee1cd66bafab4c8168509", size = 2517025, upload-time = "2025-12-08T17:02:39.908Z" }
@@ -2848,9 +2848,9 @@ source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and sys_platform != 'win32'",
+    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'win32'",
-    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version == '3.11.*' and sys_platform == 'win32'",
 ]
 dependencies = [
@@ -2966,9 +2966,9 @@ source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version == '3.12.*' and sys_platform != 'win32'",
+    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
     "python_full_version == '3.12.*' and sys_platform == 'win32'",
-    "python_full_version == '3.11.*' and sys_platform != 'win32'",
     "python_full_version == '3.11.*' and sys_platform == 'win32'",
 ]
 dependencies = [
