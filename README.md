@@ -1,8 +1,8 @@
 # SAR Ships Segmentation
 
 ## Info
-* The project is regarding the segmentation of ships in the processed images extracted from the Synthetic Aperture Radar (SAR) data
-* This project involves learning some advanced concepts like various model training and inference optimization strategies, using TFRecords for dataset creation, training using Nvidia Dali Pipelines, DDP training using torchrun.
+* This repo contains ship segmentation in the processed images extracted from the Synthetic Aperture Radar (SAR) data. The dataset used in this repo is [HRSID](https://github.com/chaozhong2010/HRSID)
+* This project involves learning some advanced concepts like various model training and inference optimization strategies, using TFRecords for dataset creation, training using Nvidia Dali Pipelines, DDP training using torchrun
 
 
 ## Instructions to run code for data preparation
@@ -15,8 +15,8 @@
 
 ## Instructions to optimize model checkpoints for inference
 * Run [src/optimize_model_with_aot_inductor.py](src/optimize_model_with_aot_inductor.py) to optimize the model checkpoint with AOT Inductor compilation. This is mainly useful to reduce the inference cold start latence i.e. to reduce the time for the first inference
-* Run [src/optimize_model_with_onnx.py](src/optimize_model_with_onnx.py) to optimize the model checkpoint with ONNX.
-* Run [src/optimize_model_with_tensorrt.py](src/optimize_model_with_tensorrt.py) to optimize the model checkpoint with TensorRT.
+* Run [src/optimize_model_with_onnx.py](src/optimize_model_with_onnx.py) to optimize the model checkpoint with ONNX
+* Run [src/optimize_model_with_tensorrt.py](src/optimize_model_with_tensorrt.py) to optimize the model checkpoint with TensorRT
 
 
 ## Instructions to run code for ship segmentation
