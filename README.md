@@ -103,7 +103,7 @@ torchrun --standalone --nproc_per_node=2 ML_SAR_Ships/src/run_sem_seg_trainer_dd
 
 
 ## Model performance quantitative metrics
-* The following table shows the quantitative metrics of the ConvNextV2-Tiny-DeepLabV3+ model performance without using class weights in the Focal loss function. The models have not been trained well enough to optimize for performance rather than for learning new skills.
+* The following table shows the quantitative metrics of the ConvNextV2-Tiny-DeepLabV3+ model performance without using class weights in the Focal loss function. The models have not been trained well enough to optimize for performance metrics but for learning new skills.
 
 | Model name | Train mIoU | Train Dice | Test mIoU | Test Dice |
 | ---------- | ---------- | ---------- | --------- | --------- |
