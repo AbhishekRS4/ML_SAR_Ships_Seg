@@ -2,7 +2,7 @@
 
 ## Info
 * This repo contains ship segmentation in the processed images extracted from the Synthetic Aperture Radar (SAR) data. The dataset used in this repo is [HRSID](https://github.com/chaozhong2010/HRSID)
-* This project involves learning some advanced concepts like various model training and inference optimization strategies, using TFRecords for dataset creation, training using Nvidia Dali Pipelines, DDP training using torchrun
+* This project involves learning some advanced concepts and skills like various model training and inference optimization strategies, using TFRecords for dataset creation, training using Nvidia Dali Pipelines, DDP training using torchrun
 
 
 ## Instructions to run code for data preparation
