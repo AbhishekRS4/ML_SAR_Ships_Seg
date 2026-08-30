@@ -83,7 +83,7 @@ torchrun --standalone --nproc_per_node=2 ML_SAR_Ships/src/run_sem_seg_trainer_dd
 ## Model inference using TensorRT
 * The TensorRT model optimization is used to benchmark the inference time on the same GPU. The inference time without preprocessing and data transfer
 * For performing any experiments with TensorRT, use the following docker image - `nvcr.io/nvidia/pytorch:25.11-py3`
-* Refer [docker_cmds/README.md](docker_cmds/README.md) for instructions to run TensorRT experiments
+* Refer [tensorrt_docker_scripts/README.md](tensorrt_docker_scripts/README.md) for instructions to run TensorRT experiments
 * The dynamo frontend is used to compile the export program in both fp32 and mixed precisions for the **ConvNextV2-Tiny-DeepLabV3+** model. However, the mixed precision did not work since the inference results were all blank with mixed precision. Only fp32 worked with TensorRT
 * The following table shows the inference time with TensorRT optimization. It can be clearly observed that it did not give a significant improvement in the inference time
 
