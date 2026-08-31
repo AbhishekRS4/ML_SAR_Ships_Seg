@@ -27,3 +27,20 @@ dev-train-torch = [
 dev-train-dali = [
     "nvidia-dali-cuda120==2.1.0",
 ]
+dev-inference-kserve = [
+    "kserve==0.20.0",
+    "numpy==2.2.6",
+    "pillow==11.1.0",
+    "scikit-image==0.25.2",
+    "timm==1.0.22",
+    "torch==2.6.0",
+    "torchvision==0.21.0",
+]
+
+[tool.uv]
+conflicts = [
+    [
+        { group = "dev-train-torch" },
+        { group = "dev-inference-kserve" },
+    ],
+]
