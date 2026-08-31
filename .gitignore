@@ -208,3 +208,4 @@ __marimo__/
 
 # MLFlow
 mlruns/
+model_for_prod/
