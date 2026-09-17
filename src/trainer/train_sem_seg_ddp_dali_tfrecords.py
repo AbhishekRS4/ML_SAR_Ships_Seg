@@ -41,7 +41,6 @@ from metrics.compute_metrics import (
     get_confusion_matrix_figure,
 )
 
-
 ## Extremely important for single node and multi-gpu training setup
 os.environ["NCCL_SOCKET_IFNAME"] = "lo"
 os.environ["NCCL_P2P_DISABLE"] = "1"
