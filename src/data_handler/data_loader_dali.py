@@ -9,7 +9,6 @@ from typing import Tuple, List, Union
 from nvidia.dali.pipeline import pipeline_def
 from nvidia.dali.plugin.pytorch import DALIGenericIterator, LastBatchPolicy
 
-
 dali_backend.SetHostBufferShrinkThreshold(1.0)
 
 
