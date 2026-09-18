@@ -48,7 +48,34 @@ DOCKERFILE="kserve-rest-serving.dockerfile"
 # Argument parsing
 # --------------------------------------------------------------------------
 usage() {
-    sed -n '/^# Usage/,/^# ---/p' "$0" | head -n -1 | sed 's/^# \{0,1\}//'
+    cat <<EOF
+Usage:
+  $(basename "$0") [OPTIONS]
+
+Builds the Docker image for the KServe custom REST serving runtime that serves
+the SAR ship segmentation PyTorch model via the V2 Open Inference Protocol.
+
+Options:
+  -r, --registry <registry>   Container registry / Docker Hub username.
+                              Default: "local" (image stays on local daemon,
+                              not pushed to any registry).
+  -t, --tag      <tag>        Image tag.
+                              Default: "v1"
+  -p, --push                  Push the image to the registry after a successful
+                              build. Requires docker login.
+      --no-cache              Pass --no-cache to docker build.
+  -h, --help                  Show this help message and exit.
+
+Examples:
+  # Build locally (no push):
+  ./kserve_scripts/$(basename "$0")
+
+  # Build and push to Docker Hub:
+  ./kserve_scripts/$(basename "$0") --registry johndoe --push
+
+  # Build with a custom tag, no layer cache:
+  ./kserve_scripts/$(basename "$0") --registry johndoe --tag v2 --no-cache --push
+EOF
     exit 0
 }
 
